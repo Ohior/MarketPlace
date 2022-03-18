@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_nav"
+    app:startDestination="@id/loginFragment">
+
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.example.marketplace.LoginFragment"
+        android:label="fragment_login"
+        tools:layout="@layout/fragment_login" >
+        <action
+            android:id="@+id/loginFragment_to_createVendorFragment"
+            app:destination="@id/createVendorFragment" />
+        <action
+            android:id="@+id/loginFragment_to_createCustomerFragment"
+            app:destination="@id/createCustomerFragment3" />
+    </fragment>
+    <fragment
+        android:id="@+id/createVendorFragment"
+        android:name="com.example.marketplace.CreateVendorFragment"
+        android:label="fragment_create_vendor"
+        tools:layout="@layout/fragment_create_vendor" >
+        <action
+            android:id="@+id/createVendorFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/createCustomerFragment3"
+        android:name="com.example.marketplace.CreateCustomerFragment"
+        android:label="CreateCustomerFragment" >
+        <action
+            android:id="@+id/createCustomerFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+    </fragment>
+</navigation>

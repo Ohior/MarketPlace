@@ -1,0 +1,39 @@
+<resources>
+    <string name="app_name">MarketPlace</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="profile_image">profile image</string>
+    <string name="name">Name</string>
+    <string name="password">password</string>
+    <string name="log_in">Log In</string>
+    <string name="customer">Customer</string>
+    <string name="text_for_create_store">If you want to create a store click</string>
+    <string name="create_store">Create Store</string>
+
+    <string name="username">username</string>
+    <string name="login">Login</string>
+    <string name="word1">Don\'t have an account? Create account as </string>
+    <string name="vendor">Vendor</string>
+    <string name="visitor">Or Explore</string>
+    <string name="sign_in">Sign in</string>
+    <string name="phone_number">phone number</string>
+    <string name="store_name">store name</string>
+    <string name="cancel">Cancel</string>
+    <string name="address">address</string>
+    <string name="info">Information</string>
+    <string name="select_all">Select All</string>
+    <string name="delete">Delete</string>
+    <string name="settings">Settings</string>
+    <string name="users">Users</string>
+    <string name="logout">Log Out</string>
+    <string name="location">Location</string>
+    <string name="Chat">Chat</string>
+    <string name="product_icon">product icon</string>
+    <string name="detail">detail</string>
+    <string name="price">price</string>
+    <string name="product_name">product name</string>
+    <string name="exit">Exit</string>
+    <string name="save">Save</string>
+    <string name="add_product">Add Product</string>
+</resources>
