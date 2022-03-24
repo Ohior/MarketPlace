@@ -19,7 +19,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.Navigation
-import com.example.marketplace.constant.Constant
+import com.example.marketplace.tool.Constant
 
 
 class CreateCustomerFragment : Fragment() {

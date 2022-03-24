@@ -1,7 +1,9 @@
 package com.example.marketplace.shop
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.example.marketplace.MainActivity
 import com.example.marketplace.R
 
 class ShopActivity : AppCompatActivity() {

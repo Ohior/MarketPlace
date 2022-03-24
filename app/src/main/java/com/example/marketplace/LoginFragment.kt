@@ -11,12 +11,9 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.navigation.Navigation
-import com.example.marketplace.constant.Constant
-import com.example.marketplace.dataclass.DataHolder
-import com.example.marketplace.dataclass.VendorDataClass
+import com.example.marketplace.tool.Constant
 import com.example.marketplace.shop.ShopActivity
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
 
 
 class LoginFragment : Fragment() {
@@ -27,13 +24,11 @@ class LoginFragment : Fragment() {
     private lateinit var id_tv_create_store: TextView
 
     private lateinit var firebase_auth: FirebaseAuth
-    private lateinit var data_holder: DataHolder
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         firebase_auth = FirebaseAuth.getInstance()
-        data_holder = DataHolder()
 
     }
 
@@ -79,10 +74,11 @@ class LoginFragment : Fragment() {
                     //code for logging in user
                     val intent = Intent(context, ShopActivity::class.java)
                     //save user details
-                    data_holder.setString(requireContext(), Constant.USERNAME, username)
-                    data_holder.setString(requireContext(), Constant.PASSWORD, password)
-                    //finish this activity
-                    requireActivity().finish()
+                    view.visibility = EditText.VISIBLE
+                    id_et_login_name.text.clear()
+                    id_et_login_password.text.clear()
+                    Constant.setString(requireContext(), Constant.USERNAME, username)
+                    Constant.setString(requireContext(), Constant.PASSWORD, password)
                     startActivity(intent)
                 } else {
                     view.visibility = EditText.VISIBLE

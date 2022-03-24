@@ -18,5 +18,9 @@
         android:id="@+id/addProductFragment"
         android:name="com.example.marketplace.shop.AddProductFragment"
         android:label="fragment_add_product"
-        tools:layout="@layout/fragment_add_product" />
+        tools:layout="@layout/fragment_add_product" >
+        <action
+            android:id="@+id/addProductFragment_to_shopFragment"
+            app:destination="@id/shopFragment" />
+    </fragment>
 </navigation>

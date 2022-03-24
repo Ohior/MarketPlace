@@ -98,8 +98,8 @@
             android:hint="@string/address"
             android:inputType="textMultiLine"
             android:maxLength="200"
-            android:paddingHorizontal="10dp"
-            android:minLines="2" />
+            android:minLines="2"
+            android:paddingHorizontal="10dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -123,9 +123,9 @@
         <Button
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:id="@+id/id_btn_sign_in"
+            android:id="@+id/id_btn_sign_up"
             android:layout_weight="1"
-            android:text="@string/sign_in"
+            android:text="@string/sign_up"
             android:layout_marginHorizontal="10dp"
            android:textStyle="italic|bold"
             android:textColor="@color/black"
