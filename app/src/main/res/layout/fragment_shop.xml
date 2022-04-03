@@ -18,6 +18,8 @@
             android:layout_height="100dp"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
+            android:adjustViewBounds="true"
+            android:scaleType="fitXY"
             android:layout_marginHorizontal="10dp"
             android:contentDescription="@string/profile_image"
             android:src="@drawable/proimg" />
@@ -68,7 +70,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/id_fab_add_product"
-        android:src="@drawable/ic_shopping"
+        android:src="@drawable/ic_add_box"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_margin="30dp"

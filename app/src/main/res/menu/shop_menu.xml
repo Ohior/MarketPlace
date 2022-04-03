@@ -2,6 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/id_menu_market"
+        android:title="@string/market"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/market_icon"/>
+    <item
         android:id="@+id/id_menu_location"
         android:title="@string/location"
         app:showAsAction="ifRoom"
@@ -12,17 +17,19 @@
         android:icon="@drawable/chaticon"
         app:showAsAction="ifRoom"/>
     <item
-        android:id="@+id/id_menu_select_all"
-        android:title="@string/select_all"
+        android:id="@+id/id_menu_profile"
+        android:title="@string/profile"
         android:visible="false"/>
     <item
+        android:id="@+id/id_menu_select_all"
+        android:title="@string/select_all"/>
+    <item
         android:id="@+id/id_menu_delete"
-        android:title="@string/delete"
-        android:visible="false"/>
+        android:title="@string/delete"/>
     <item
         android:id="@+id/id_menu_setting"
         android:title="@string/settings"
-        android:icon="@drawable/settingicon"/>
+        android:icon="@drawable/setting_icon"/>
     <item
         android:id="@+id/id_menu_logout"
         android:title="@string/logout"/>

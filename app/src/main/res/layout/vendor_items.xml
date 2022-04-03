@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="180dp"
+    android:background="@color/grey"
+    android:layout_marginVertical="5dp"
+    android:layout_marginHorizontal="5dp">
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="85dp"
+            android:id="@+id/id_image_profile"
+            android:src="@drawable/applogo"
+            android:contentDescription="@string/profile_image"/>
+
+        <TextView
+            android:id="@+id/id_tv_profile_shop_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/id_image_profile"
+            android:gravity="center_horizontal"
+            android:paddingHorizontal="10dp"
+            android:scrollbars="vertical"
+            android:text="@string/store_name"
+            android:textColor="@color/black"
+            android:textStyle="bold|italic" />
+
+        <TextView
+            android:id="@+id/id_tv_profile_address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/id_tv_profile_shop_name"
+            android:minLines="2"
+            android:paddingHorizontal="10dp"
+            android:scrollbars="vertical"
+            android:text="@string/address"
+            android:textSize="17sp"
+
+            android:textStyle="bold|italic" />
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="3dp"
+            android:layout_marginTop="5dp"
+            android:background="@color/blue"
+            android:layout_alignParentBottom="true"/>
+</RelativeLayout>

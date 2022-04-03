@@ -9,6 +9,7 @@
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="100dp"
+        android:id="@+id/id_iv_image"
         android:src="@drawable/applogo"
         android:layout_gravity="center_horizontal"
         android:contentDescription="@string/profile_image"
@@ -23,6 +24,7 @@
             android:background="@drawable/bg_border"
             android:hint="@string/name"
             android:paddingHorizontal="10dp"
+            android:layout_marginHorizontal="10dp"
             android:layout_marginBottom="10dp"/>
         <EditText
             android:layout_width="match_parent"
@@ -33,7 +35,9 @@
             android:maxLength="10"
             android:background="@drawable/bg_border"
             android:paddingHorizontal="10dp"
+            android:layout_marginHorizontal="10dp"
             android:hint="@string/password"/>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

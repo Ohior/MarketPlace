@@ -1,15 +1,12 @@
 package com.example.marketplace
 
 import android.Manifest
-import android.R.attr
 import android.app.Activity.RESULT_OK
-import android.app.ProgressDialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import androidx.fragment.app.Fragment
@@ -22,33 +19,28 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.Navigation
-import com.example.marketplace.shop.ShopActivity
 import com.example.marketplace.tool.Constant
 import com.example.marketplace.tool.VendorDataClass
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import android.R.attr.data
 import android.content.Context
-import android.media.Image
 import java.io.ByteArrayOutputStream
 import java.io.File
 
 
 class CreateVendorFragment : Fragment() {
     private lateinit var layout_view: View
-    lateinit var id_et_signin_name: EditText
-    lateinit var id_et_signin_password: EditText
-    lateinit var id_et_signin_phonenumber: EditText
-    lateinit var id_et_signin_storename: EditText
-    lateinit var id_et_signin_address: EditText
-    lateinit var id_image_profile: ImageView
-    lateinit var id_btn_cancel: Button
-    lateinit var id_btn_sign_up: Button
+    private lateinit var id_et_signin_name: EditText
+    private lateinit var id_et_signin_password: EditText
+    private lateinit var id_et_signin_phonenumber: EditText
+    private lateinit var id_et_signin_storename: EditText
+    private lateinit var id_et_signin_address: EditText
+    private lateinit var id_image_profile: ImageView
+    private lateinit var id_btn_cancel: Button
+    private lateinit var id_btn_sign_up: Button
 
 
     private lateinit var image_file_uri: Uri
@@ -108,10 +100,10 @@ class CreateVendorFragment : Fragment() {
         {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
             {
-                val cameraIntent = Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(cameraIntent, Constant.REQUEST_IMAGE_CAMERA);
+                val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                startActivityForResult(cameraIntent, Constant.REQUEST_IMAGE_CAMERA)
             }else{
-                Toast.makeText(requireContext(), "camera permission denied", Toast.LENGTH_LONG).show();
+                Toast.makeText(requireContext(), "camera permission denied", Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -189,16 +181,16 @@ class CreateVendorFragment : Fragment() {
     }
 
     private fun imageClickListener() {
-        id_image_profile.setOnClickListener{v ->
+        id_image_profile.setOnClickListener{
             val popup = AlertDialog.Builder(requireContext())
             popup.setTitle("Get Image From")
-            popup.setPositiveButton("gallery") { dialog: DialogInterface, which: Int ->
+            popup.setPositiveButton("gallery") { _: DialogInterface, _: Int ->
                 val intent = Intent(Intent.ACTION_GET_CONTENT)
                 intent.type = "image/*"
 //                startActivityForResult(intent, Constant.REQUEST_IMAGE_GALLERY)
                 startActivityForResult(Intent.createChooser(intent, "Select Picture"), Constant.REQUEST_IMAGE_GALLERY)
             }
-            popup.setNegativeButton("camera") { dialog: DialogInterface, which: Int ->
+            popup.setNegativeButton("camera") { _: DialogInterface, _: Int ->
 //                        takePicture()
                 Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
                     activity?.let {
@@ -235,7 +227,7 @@ class CreateVendorFragment : Fragment() {
             }
     }
 
-    private fun addVendor(username: String, password: String, phonenumber: String, storename: String, address: String, ) {
+    private fun addVendor(username: String, password: String, phonenumber: String, storename: String, address: String ) {
         db_refrence.push()
         db_refrence.child(Constant.VENDOR)
             .child(username+"_"+password)

@@ -4,13 +4,21 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Developer/AndroidStudio/MarketPlace/app/src/main/res/layout/activity_main.xml" value="0.12228260869565218" />
+        <entry key="..\:/Developer/AndroidStudio/MarketPlace/app/src/main/res/layout/activity_market2.xml" value="0.1" />
         <entry key="..\:/Developer/AndroidStudio/MarketPlace/app/src/main/res/layout/activity_shop.xml" value="0.1793478260869565" />
         <entry key="..\:/Developer/AndroidStudio/MarketPlace/app/src/main/res/layout/fragment_add_product.xml" value="0.14990942028985507" />
+        <entry key="..\:/Developer/AndroidStudio/MarketPlace/app/src/main/res/layout/fragment_chat.xml" value="0.1" />
         <entry key="..\:/Developer/AndroidStudio/MarketPlace/app/src/main/res/layout/fragment_create_customer.xml" value="0.17028985507246377" />
         <entry key="..\:/Developer/AndroidStudio/MarketPlace/app/src/main/res/layout/fragment_create_vendor.xml" value="0.15172101449275363" />
+        <entry key="..\:/Developer/AndroidStudio/MarketPlace/app/src/main/res/layout/fragment_locate.xml" value="0.1" />
         <entry key="..\:/Developer/AndroidStudio/MarketPlace/app/src/main/res/layout/fragment_login.xml" value="0.15172101449275363" />
+        <entry key="..\:/Developer/AndroidStudio/MarketPlace/app/src/main/res/layout/fragment_market.xml" value="0.1" />
         <entry key="..\:/Developer/AndroidStudio/MarketPlace/app/src/main/res/layout/fragment_shop.xml" value="0.1793478260869565" />
+        <entry key="..\:/Developer/AndroidStudio/MarketPlace/app/src/main/res/layout/message_items.xml" value="0.1671195652173913" />
+        <entry key="..\:/Developer/AndroidStudio/MarketPlace/app/src/main/res/layout/product_items.xml" value="0.20729166666666668" />
         <entry key="..\:/Developer/AndroidStudio/MarketPlace/app/src/main/res/layout/shop_items.xml" value="0.1793478260869565" />
+        <entry key="..\:/Developer/AndroidStudio/MarketPlace/app/src/main/res/layout/vendor_items.xml" value="0.20729166666666668" />
+        <entry key="..\:/Developer/AndroidStudio/MarketPlace/app/src/main/res/menu/market_menu.xml" value="0.203125" />
         <entry key="..\:/Developer/AndroidStudio/MarketPlace/app/src/main/res/menu/shop_menu.xml" value="0.203125" />
       </map>
     </option>

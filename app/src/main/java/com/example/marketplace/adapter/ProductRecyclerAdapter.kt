@@ -16,14 +16,14 @@ class ProductRecyclerAdapter(
     private val product_list: ArrayList<ProductDataClass>):
     RecyclerView.Adapter<ProductRecyclerAdapter.ProductViewHolder>() {
 
-    private lateinit var click_listener: onItemClickListener
+    private lateinit var click_listener: OnClickListener
 
 
-    interface onItemClickListener{
+    interface OnClickListener{
         fun onItemClick(position: Int, view: View)
     }
 
-    fun setOnItemClickListener(listener: onItemClickListener){
+    fun setOnItemClickListener(listener: OnClickListener){
         click_listener = listener
     }
 
@@ -45,7 +45,7 @@ class ProductRecyclerAdapter(
     override fun getItemCount(): Int {
         return product_list.size
     }
-    class ProductViewHolder(item_view: View, listener: onItemClickListener): RecyclerView.ViewHolder(item_view){
+    class ProductViewHolder(item_view: View, listener: OnClickListener): RecyclerView.ViewHolder(item_view){
         val imguri: ImageView = item_view.findViewById(R.id.id_iv_product_img)
         val itemprice: TextView = item_view.findViewById(R.id.id_store_item_price)
         val itemproduct: TextView = item_view.findViewById(R.id.id_store_item_pname)

@@ -1,19 +1,18 @@
 package com.example.marketplace.tool
 
 import android.app.Activity
+import android.app.ProgressDialog
 import android.content.ContentResolver
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.Resources
 import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.preference.PreferenceManager
 import android.provider.MediaStore
 import android.util.Log
 import android.widget.ImageView
 import android.widget.Toast
-import com.example.marketplace.R
 import com.squareup.picasso.Picasso
 import java.io.ByteArrayOutputStream
 
@@ -83,10 +82,10 @@ object Constant {
         Log.e(tag, mess )
     }
 
-    fun getImageUri(cont: Context, bitm:Bitmap): Uri {
+    fun getImageUri(cont: Context, bitmap:Bitmap): Uri {
         val bytes = ByteArrayOutputStream()
-        bitm.compress(Bitmap.CompressFormat.PNG, 100, bytes)
-        val path = MediaStore.Images.Media.insertImage(cont.contentResolver, bitm,"title", null)
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, bytes)
+        val path = MediaStore.Images.Media.insertImage(cont.contentResolver, bitmap,"title", null)
         return Uri.parse(path)
     }
 
@@ -104,11 +103,11 @@ object Constant {
         return path
     }
 
-    fun getLogoUri(resources: Resources): Uri {
+    fun getDrawableUri(resources: Resources, drawable: Int): Uri {
         return Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE
-                + "://" + resources.getResourcePackageName(R.drawable.applogo)
-                + '/' + resources.getResourceTypeName(R.drawable.applogo)
-                + '/' + resources.getResourceEntryName(R.drawable.applogo))
+                + "://" + resources.getResourcePackageName(drawable)
+                + '/' + resources.getResourceTypeName(drawable)
+                + '/' + resources.getResourceEntryName(drawable))
     }
 
     fun checkProductEmptyFields(pclass: ProductDataClass): Boolean {
@@ -122,5 +121,13 @@ object Constant {
                 && vclass.password.isEmpty()
                 && vclass.phonenumber.isEmpty()
                 && vclass.address.isEmpty())
+    }
+
+    fun showProgressBar(context: Context, message: String="Loading.... Please wait", function:(ProgressDialog)->Unit){
+        val progressbar = ProgressDialog(context)
+        progressbar.setTitle(message)
+        progressbar.show()
+
+        function(progressbar)
     }
 }

@@ -117,11 +117,11 @@ class AddProductFragment : Fragment() {
             //get details
 
             try {
-            val imgfilepath = storage_refrence.child(product_image_uri.lastPathSegment!!)
+                val imgfilepath = storage_refrence.child(product_image_uri.lastPathSegment!!)
 //                product_image_uri.lastPathSegment
                 saveProductToDatabase(imgfilepath, view)
             }catch (uninitialized: UninitializedPropertyAccessException){
-                product_image_uri = Constant.getLogoUri(resources)
+                product_image_uri = Constant.getDrawableUri(resources, R.drawable.applogo)
                 val imgfilepath = storage_refrence.child(product_image_uri.lastPathSegment!!)
                 saveProductToDatabase(imgfilepath, view)
             }
