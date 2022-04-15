@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/grey"
+    android:layout_marginVertical="5dp"
+    android:layout_marginHorizontal="10dp"
+    android:id="@+id/id_ll_message_item"
+    android:orientation="vertical">
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="invisible"
+        android:id="@+id/id_tv_hidden"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/id_tv_message"
+        android:textStyle="bold"
+        android:singleLine="false"
+        android:paddingHorizontal="10dp"
+        android:text="@string/message"/>
+
+    <TextView
+        android:id="@+id/id_tv_profile_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/username"
+        android:textColor="@color/black"
+        android:paddingHorizontal="10dp"
+        android:textStyle="italic" />
+
+    <!--    <EditText-->
+    <!--        android:id="@+id/id_et_message"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:autofillHints="dictionary"-->
+    <!--        android:hint="@string/enter_message"-->
+    <!--        android:textColor="@color/black"-->
+    <!--        android:inputType="textMultiLine|text"-->
+    <!--        android:minHeight="48dp"-->
+    <!--        android:singleLine="false" />-->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:layout_marginTop="5dp"
+        android:background="@color/black"/>
+
+</LinearLayout>

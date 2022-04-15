@@ -21,7 +21,6 @@
             android:layout_height="200dp"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="10dp"
-            android:background="@color/grey"
             android:contentDescription="@string/profile_image"
             android:src="@drawable/applogo" />
 
@@ -105,7 +104,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/id_et_signin_address"
-        android:background="@color/grey"
         android:orientation="horizontal"
         android:layout_marginVertical="5dp">
         <Button
@@ -113,25 +111,23 @@
             android:layout_height="wrap_content"
             android:id="@+id/id_btn_cancel"
             android:layout_weight="1"
-            android:text="@string/cancel"
+            android:text="@string/back"
             android:layout_marginHorizontal="10dp"
             android:textStyle="italic|bold"
             android:textColor="@color/black"
-            android:textSize="25sp"
             android:textAllCaps="false"
-            style="@style/Widget.AppCompat.Button"/>
+            style="@style/myButton"/>
         <Button
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:id="@+id/id_btn_sign_up"
             android:layout_weight="1"
-            android:text="@string/sign_up"
+            android:text="@string/create"
             android:layout_marginHorizontal="10dp"
            android:textStyle="italic|bold"
             android:textColor="@color/black"
-            android:textSize="25sp"
             android:textAllCaps="false"
-            style="@style/Widget.AppCompat.Button"/>
+            style="@style/myButton"/>
     </LinearLayout>
     </RelativeLayout>
 </ScrollView>

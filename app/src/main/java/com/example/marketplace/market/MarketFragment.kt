@@ -1,18 +1,17 @@
 package com.example.marketplace.market
 
+import android.content.Intent
 import android.os.Bundle
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.marketplace.R
 import com.example.marketplace.adapter.VendorRecyclerAdapter
-import com.example.marketplace.tool.Constant
-import com.example.marketplace.tool.FirebaseManager
-import com.example.marketplace.tool.VendorDataClass
+import com.example.marketplace.data.VendorDataClass
+import com.example.marketplace.shop.ShopActivity
+import com.example.marketplace.tool.*
 import com.google.firebase.auth.FirebaseAuth
 
 class MarketFragment : Fragment() {
@@ -59,11 +58,11 @@ class MarketFragment : Fragment() {
         vendor_recycler_adapter = VendorRecyclerAdapter(requireContext(), vendor_array_list)
         id_market_rv.adapter = vendor_recycler_adapter
 
-        vendorClickListener()
-
         // Market
         displayMarketStore()
 
+        // check if store/ vendor was clicked
+        vendorClickListener()
 
         return screen_view.rootView
     }
@@ -72,7 +71,15 @@ class MarketFragment : Fragment() {
         vendor_recycler_adapter.setOnItemClickListener(
             object : VendorRecyclerAdapter.OnClickListener {
                 override fun onItemClick(position: Int, view: View) {
-                    Constant.showShortToast(requireContext(), "$position was clicked")
+                    val vendordata =  vendor_array_list[position]
+                    Constant.setString(requireContext(), Constant.CLICK_USER, vendordata.username)
+                    Constant.setString(requireContext(), Constant.CLICK_PASSWORD, vendordata.password)
+                    val intent = Intent(requireContext(), ShopActivity::class.java)
+                    startActivity(intent)
+                }
+
+                override fun onLongItemClick(position: Int, view: View) {
+                    TODO("Not yet implemented")
                 }
 
             }
@@ -80,22 +87,26 @@ class MarketFragment : Fragment() {
     }
 
     private fun displayMarketStore() {
-        var count = 0
-        firebase_manager.getFirebaseDatas("vendor"){snapshots ->
+        Tool.loadingProgressBar(requireContext(), "getting shops..."){probar->
+        firebase_manager.getFirebaseDatas("vendor"){snapshot ->
             vendor_array_list.clear()
-            for (snapshot in snapshots){
-                count ++
-                val split = snapshot.key.toString().split("_")
-                firebase_manager.getVendorData(
-                    "vendor/"
-                            + split[0] + "_" + split[1] + "/"
-                            + split[0]) {
-                    vendor_array_list.add(it)
+            for ((count, shot) in snapshot.withIndex()){
+                val split = shot.key.toString().split("_")
+                firebase_manager.getVendorDataBool("vendor" +
+                        "/" + split[0] +
+                        "_" + split[1] +
+                        "_" + split[2] +
+                        "/" + split[1]
+                ) {data, bool ->
+                    vendor_array_list.add(data)
 //                    vendor_recycler_adapter.notifyDataSetChanged()
                     vendor_recycler_adapter.notifyItemChanged(count)
+                    if (bool){
+                        probar.dismiss()
+                    }
                 }
-                Constant.debugMessage(snapshot.key.toString()+"and"+split,tag="KEY")
             }
+        }
         }
     }
 }

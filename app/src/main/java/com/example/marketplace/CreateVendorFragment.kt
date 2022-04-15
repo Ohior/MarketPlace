@@ -20,19 +20,21 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.Navigation
 import com.example.marketplace.tool.Constant
-import com.example.marketplace.tool.VendorDataClass
+import com.example.marketplace.data.VendorDataClass
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import android.content.Context
+import com.example.marketplace.tool.Tool
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.util.*
 
 
 class CreateVendorFragment : Fragment() {
-    private lateinit var layout_view: View
+    private lateinit var screen_view: View
     private lateinit var id_et_signin_name: EditText
     private lateinit var id_et_signin_password: EditText
     private lateinit var id_et_signin_phonenumber: EditText
@@ -127,7 +129,7 @@ class CreateVendorFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_create_vendor, container, false)
-        layout_view = view
+        screen_view = view
         //initialise the views
         id_et_signin_name = view.findViewById(R.id.id_et_signin_name)
         id_et_signin_password = view.findViewById(R.id.id_et_signin_password)
@@ -140,12 +142,20 @@ class CreateVendorFragment : Fragment() {
 
         imageClickListener()
         signUpButtonClickListener()
+        cancelButtonClicked(view)
 
         return view
     }
 
+    private fun cancelButtonClicked(view: View) {
+        id_btn_cancel.setOnClickListener { v ->
+            Navigation.findNavController(view).navigate(R.id.createVendorFragment_to_loginFragment)
+            Toast.makeText(activity, "profile not updated", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     private fun signUpButtonClickListener() {
-        id_btn_sign_up.setOnClickListener {
+        id_btn_sign_up.setOnClickListener{
             uploadImageAndCreateVendor()
         }
     }
@@ -159,25 +169,34 @@ class CreateVendorFragment : Fragment() {
     private fun uploadImageAndCreateVendor(){
         val username = id_et_signin_name.text.toString()
         val password = id_et_signin_password.text.toString()
-//        val refrence = storage_refrence.child(System.currentTimeMillis().toString()+"."+getFileExtension(image_file_uri))
-        val imgfilepath = storage_refrence.child(image_file_uri.lastPathSegment!!)
-//        upload_task = refrence.putFile(file_path)
-        imgfilepath.putFile(image_file_uri)
-            .addOnSuccessListener {
-                imgfilepath.downloadUrl.addOnSuccessListener {
-                    // it contains the online file path
-                    image_file_uri = it
-                    //put the path in storage
-                    Constant.setString(requireContext(), Constant.IMAGEURI, it.toString())
+        if (username.contains("_")) {
+            Tool.showShortToast(requireContext(), "$username cannot contain underscore")
+            return
+        }
+        Tool.loadingProgressBar(
+            requireContext(),
+            "Creating vendor... Please wait"
+        ) { probar ->
+            val refrencepath = storage_refrence.child("vendorimage/"+ UUID.randomUUID().toString())
+            refrencepath.putFile(image_file_uri)
+                .addOnSuccessListener {
+                    refrencepath.downloadUrl.addOnSuccessListener {
+                        image_file_uri = it
+                        //put the path in storage
+                        Constant.setString(requireContext(), Constant.IMAGE_URI, it.toString())
+                    }
+                    createVendor(username, password)
+                    probar.dismiss()
                 }
-                createVendor(username, password)
-                Toast.makeText(this.context, "Upload Successful", Toast.LENGTH_LONG).show()
-            }
-            .addOnFailureListener{
-                Toast.makeText(this.context, "Failed", Toast.LENGTH_SHORT).show()
-            }
-            .addOnProgressListener {
-            }
+                .addOnFailureListener{
+                    Toast.makeText(this.context, "Failed! could not upload image", Toast.LENGTH_SHORT).show()
+                    probar.dismiss()
+                }
+                .addOnProgressListener{
+
+                }
+        }
+
     }
 
     private fun imageClickListener() {
@@ -215,22 +234,27 @@ class CreateVendorFragment : Fragment() {
         val storename = id_et_signin_storename.text.toString()
         val address = id_et_signin_address.text.toString()
 
-        if (Constant.checkVendorEmptyFields(VendorDataClass(image_file_uri.toString(),
-            username, password, phonenumber, storename, address)))
-        firebase_auth.createUserWithEmailAndPassword(Constant.getEmailHack(username),password)
-            .addOnCompleteListener(requireActivity()) { task ->
-                if (task.isSuccessful){
-                    addVendor(username, password, phonenumber, storename, address)
-                    Navigation.findNavController(layout_view).navigate(R.id.createVendorFragment_to_loginFragment)
+//        if (Constant.checkVendorEmptyFields(VendorDataClass(image_file_uri.toString(),
+//            username, password, phonenumber, storename, address))) {
+            firebase_auth.createUserWithEmailAndPassword(Constant.getEmailHack(username), password)
+                .addOnCompleteListener(requireActivity()) { task ->
+                    if (task.isSuccessful) {
+                        addVendor(username, password, phonenumber, storename, address)
+                        Navigation.findNavController(screen_view)
+                            .navigate(R.id.createVendorFragment_to_loginFragment)
+                        Toast.makeText(this.context, "Upload Successful", Toast.LENGTH_LONG).show()
+                    }
+                    Navigation.findNavController(screen_view)
+                        .navigate(R.id.createVendorFragment_to_loginFragment)
+                    Constant.showShortToast(requireContext(), "Cannot create Vendor")
                 }
-                Constant.showShortToast(requireContext(), "Cannot create Vendor")
-            }
+//        }
     }
 
     private fun addVendor(username: String, password: String, phonenumber: String, storename: String, address: String ) {
         db_refrence.push()
         db_refrence.child(Constant.VENDOR)
-            .child(username+"_"+password)
+            .child("vendor_"+username+"_"+password)
             .child(username)
             .setValue(VendorDataClass(
                 image_file_uri.toString(),

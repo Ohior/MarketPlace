@@ -11,23 +11,11 @@
         android:label="fragment_shop"
         tools:layout="@layout/fragment_shop" >
         <action
-            android:id="@+id/shopFragment_to_addProductFragment"
-            app:destination="@id/addProductFragment" />
-        <action
             android:id="@+id/shopFragment_to_locateFragment"
             app:destination="@id/locateFragment" />
         <action
-            android:id="@+id/shopFragment_to_chatListFragment"
-            app:destination="@id/chatListFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/addProductFragment"
-        android:name="com.example.marketplace.shop.AddProductFragment"
-        android:label="fragment_add_product"
-        tools:layout="@layout/fragment_add_product" >
-        <action
-            android:id="@+id/addProductFragment_to_shopFragment"
-            app:destination="@id/shopFragment" />
+            android:id="@+id/shopFragment_to_chatFragment"
+            app:destination="@id/chatFragment" />
     </fragment>
     <fragment
         android:id="@+id/locateFragment"
@@ -37,24 +25,6 @@
         <action
             android:id="@+id/locateFragment_to_shopFragment"
             app:destination="@id/shopFragment" />
-        <action
-            android:id="@+id/locateFragment_to_chatListFragment"
-            app:destination="@id/chatListFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/chatListFragment"
-        android:name="com.example.marketplace.social.ChatListFragment"
-        android:label="fragment_chat_list"
-        tools:layout="@layout/fragment_chat_list" >
-        <action
-            android:id="@+id/chatListFragment_to_shopFragment"
-            app:destination="@id/shopFragment" />
-        <action
-            android:id="@+id/chatListFragment_to_locateFragment"
-            app:destination="@id/locateFragment" />
-        <action
-            android:id="@+id/chatListFragment_to_chatFragment"
-            app:destination="@id/chatFragment" />
     </fragment>
     <fragment
         android:id="@+id/chatFragment"
@@ -62,7 +32,7 @@
         android:label="fragment_chat"
         tools:layout="@layout/fragment_chat" >
         <action
-            android:id="@+id/chatFragment_to_chatListFragment"
-            app:destination="@id/chatListFragment" />
+            android:id="@+id/chatFragment_to_shopFragment"
+            app:destination="@id/shopFragment" />
     </fragment>
 </navigation>

@@ -11,5 +11,15 @@
     <color name="grey">#CACACA</color>
     <color name="blue">#0027FF</color>
     <color name="darkgreen">#034D01</color>
+    <color name="lightgreen">#79A578</color>
     <color name="gold">#FF9800</color>
+
+    <color name="primary">#4CAF50</color>
+    <color name="primary_dark">#388E3C</color>
+    <color name="primary_light">#C8E6C9</color>
+    <color name="accent">#FF5252</color>
+    <color name="primary_text">#212121</color>
+    <color name="secondary_text">#757575</color>
+    <color name="icons">#FFFFFF</color>
+    <color name="divider">#BDBDBD</color>
 </resources>

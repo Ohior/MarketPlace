@@ -8,7 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.marketplace.R
-import com.example.marketplace.tool.ProductDataClass
+import com.example.marketplace.data.ProductDataClass
 import com.squareup.picasso.Picasso
 
 class ProductRecyclerAdapter(
@@ -21,6 +21,8 @@ class ProductRecyclerAdapter(
 
     interface OnClickListener{
         fun onItemClick(position: Int, view: View)
+        fun onLongItemClick(position: Int, view:View)
+
     }
 
     fun setOnItemClickListener(listener: OnClickListener){
@@ -52,7 +54,11 @@ class ProductRecyclerAdapter(
         val itemdetali: TextView = item_view.findViewById(R.id.id_store_item_detail)
 
         init {
-            itemView.setOnClickListener{
+            item_view.setOnLongClickListener{
+                listener.onLongItemClick(adapterPosition, item_view)
+                true
+            }
+            item_view.setOnClickListener {
                 listener.onItemClick(adapterPosition, item_view)
             }
         }

@@ -13,12 +13,21 @@ import android.provider.MediaStore
 import android.util.Log
 import android.widget.ImageView
 import android.widget.Toast
+import com.example.marketplace.data.*
 import com.squareup.picasso.Picasso
 import java.io.ByteArrayOutputStream
 
 object Constant {
+    const val LOACTION_SERVICE_ID = 175
+    const val ACTION_START_LOCATION_SERVICE = "startlocationservice"
+    const val ACTION_STOP_LOCATION_SERVICE = "stoplocationservice"
+    const val SHOP_DB_NAME = "shopdatabase"
+    const val SHOP_Product_DB_NAME = "shopproductdatabase"
+    const val LATITUDE = "latitude"
+    const val LONGITUDE = "longitude"
     val COL_COUNT = 2
-    const val IMAGEURI = "imageuri"
+    const val USER_TYPE = "usertype"
+    const val IMAGE_URI = "imageuri"
     const val PRODUCT = "product"
     const val ADDRESS = "address"
     const val STORENAME = "storename"
@@ -28,8 +37,17 @@ object Constant {
     const val REQUEST_IMAGE_CAMERA = 142
     const val REQUEST_IMAGE_GALLERY = 132
     const val EMAIL_HACK = "@sabogindaora.com"
+    const val CUSTOMER = "customer"
     const val VENDOR = "vendor"
+    const val CLICK_USER = "clickuser"
+    const val CLICK_PASSWORD = "clickpassword"
+    const val REQUEST_LOCATION_PERMISSION: Int = 1000
+    const val USER_DB_NAME = "UserDatabase"
+    const val PRODUCT_DB_NAME = "ProductDatabase"
+    const val CURRENT_LATITUDE = "currentlatitude"
+    const val CURRENT_LONGITUDE = "currentlongitude"
     private lateinit var sharedPreferences: SharedPreferences
+
 
     fun getImageBitMap(activity: Activity,imageuri: Uri): Bitmap? {
         val bitmap = MediaStore.Images.Media.getBitmap(activity.contentResolver, imageuri)
@@ -44,7 +62,7 @@ object Constant {
         Picasso.get().load(fbimgdir).into(imgid)
     }
 
-    fun setString(context: Context, key: String, data: String){
+    fun setString(context: Context, key: String, data: String?){
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
         val spe = sharedPreferences.edit()
         spe.putString(key, data)
@@ -53,10 +71,11 @@ object Constant {
 
     fun getString( context:Context,  key:String): String? {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-        return sharedPreferences.getString(key, null)
+        val data = sharedPreferences.getString(key, null)
+        return data
     }
 
-    fun setSetString( context:Context,  key:String,  data:ArrayList<String>){
+    fun setSetString(context:Context, key:String, data:ArrayList<String>){
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
         val spe = sharedPreferences.edit()
         val hashset = HashSet<String>(data)
@@ -130,4 +149,5 @@ object Constant {
 
         function(progressbar)
     }
+
 }

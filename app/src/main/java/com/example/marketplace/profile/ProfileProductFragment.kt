@@ -1,7 +1,7 @@
-package com.example.marketplace.shop
+package com.example.marketplace.profile
 
 import android.Manifest
-import android.app.Activity.RESULT_OK
+import android.app.Activity
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -23,7 +23,7 @@ import androidx.core.content.ContextCompat
 import androidx.navigation.Navigation
 import com.example.marketplace.R
 import com.example.marketplace.tool.Constant
-import com.example.marketplace.tool.ProductDataClass
+import com.example.marketplace.data.ProductDataClass
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
@@ -31,8 +31,9 @@ import com.google.firebase.storage.StorageReference
 import java.io.File
 
 
-class AddProductFragment : Fragment() {
+class ProfileProductFragment : Fragment() {
 
+    private lateinit var screen_view:View
     private lateinit var id_iv_product_img: ImageView
     private lateinit var id_product_item_pname: EditText
     private lateinit var id_product_item_price: EditText
@@ -46,32 +47,22 @@ class AddProductFragment : Fragment() {
     private lateinit var storage_refrence: StorageReference
     private lateinit var firebase_storage: FirebaseStorage
 
+    //
+    private lateinit var user_name: String
+    private lateinit var user_type: String
+    private lateinit var user_password: String
 
-
-
-//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-//        super.onActivityResult(requestCode, resultCode, data)
-//        if (requestCode == Constant.REQUEST_IMAGE_GALLERY && resultCode == RESULT_OK  && data != null){
-//            id_iv_product_img.setImageURI(data.data)
-//            product_image = MediaStore.Images.Media.getBitmap(requireContext().contentResolver, data.data);
-//        }else if (requestCode == Constant.REQUEST_IMAGE_CAMERA && resultCode == RESULT_OK  && data != null){
-//            id_iv_product_img.setImageBitmap(data.extras?.get("data") as Bitmap)
-//            product_image = data.extras?.get("data") as Bitmap
-//        }else{
-//            Toast.makeText(context, "Something Went Wrong", Toast.LENGTH_SHORT).show()
-//        }
-//    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == Constant.REQUEST_IMAGE_GALLERY && resultCode == RESULT_OK &&
+        if (requestCode == Constant.REQUEST_IMAGE_GALLERY && resultCode == Activity.RESULT_OK &&
             data != null && data.data != null
         ) {
             product_image_uri = data.data!!
             val bitmap =
                 MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, product_image_uri)
             id_iv_product_img.setImageBitmap(bitmap)
-        } else if (requestCode == Constant.REQUEST_IMAGE_CAMERA && resultCode == RESULT_OK &&
+        } else if (requestCode == Constant.REQUEST_IMAGE_CAMERA && resultCode == Activity.RESULT_OK &&
             data != null
         ) {
             val photo = data.extras?.get("data") as Bitmap
@@ -86,44 +77,50 @@ class AddProductFragment : Fragment() {
         firebase_storage = FirebaseStorage.getInstance()
         storage_refrence = firebase_storage.getReference("images")
         db_reference  = FirebaseDatabase.getInstance().getReference()
+        user_name = Constant.getString(requireContext(), Constant.USERNAME).toString()
+        user_type = Constant.getString(requireContext(), Constant.USER_TYPE).toString()
+        user_password = Constant.getString(requireContext(), Constant.PASSWORD).toString()
     }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
         // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_add_product, container, false)
+        screen_view =  inflater.inflate(R.layout.fragment_profile_product, container, false)
 
-        id_iv_product_img = view.findViewById(R.id.id_iv_product_img)
-        id_product_item_pname = view.findViewById(R.id.id_product_item_pname)
-        id_product_item_price = view.findViewById(R.id.id_product_item_price)
-        id_product_item_detail = view.findViewById(R.id.id_product_item_detail)
-        id_btn_cancel = view.findViewById(R.id.id_btn_cancel)
-        id_btn_save = view.findViewById(R.id.id_btn_save)
-
+        id_iv_product_img = screen_view.findViewById(R.id.id_iv_product_img)
+        id_product_item_pname = screen_view.findViewById(R.id.id_product_item_pname)
+        id_product_item_price = screen_view.findViewById(R.id.id_product_item_price)
+        id_product_item_detail = screen_view.findViewById(R.id.id_product_item_detail)
+        id_btn_cancel = screen_view.findViewById(R.id.id_btn_cancel)
+        id_btn_save = screen_view.findViewById(R.id.id_btn_save)
 
         chooseImage()
 
-        cancelButtonClicked(view)
+        cancelButtonClicked()
 
-        saveButtonClicked(view)
+        saveButtonClicked()
 
-        return view
+        setHasOptionsMenu(false)
+
+        return screen_view.rootView
     }
 
-    private fun saveButtonClicked(view: View) {
+
+    private fun saveButtonClicked() {
         id_btn_save.setOnClickListener{
             //get details
 
             try {
                 val imgfilepath = storage_refrence.child(product_image_uri.lastPathSegment!!)
 //                product_image_uri.lastPathSegment
-                saveProductToDatabase(imgfilepath, view)
+                saveProductToDatabase(imgfilepath, screen_view)
             }catch (uninitialized: UninitializedPropertyAccessException){
                 product_image_uri = Constant.getDrawableUri(resources, R.drawable.applogo)
                 val imgfilepath = storage_refrence.child(product_image_uri.lastPathSegment!!)
-                saveProductToDatabase(imgfilepath, view)
+                saveProductToDatabase(imgfilepath, screen_view)
             }
 
 //            val imgfilepath = storage_refrence.child(product_image_uri.lastPathSegment!!)
@@ -133,7 +130,7 @@ class AddProductFragment : Fragment() {
         }
     }
 
-    private fun saveProductToDatabase(imgfilepath: StorageReference, view:View) {
+    private fun saveProductToDatabase(imgfilepath: StorageReference, screen_view:View) {
         val pname = id_product_item_pname.text.toString()
         val price = id_product_item_price.text.toString()
         val detail = id_product_item_detail.text.toString()
@@ -141,15 +138,17 @@ class AddProductFragment : Fragment() {
             //check if any field is empty
             imgfilepath.putFile(product_image_uri)
                 .addOnSuccessListener {
-                    imgfilepath.downloadUrl.addOnSuccessListener {
+                    imgfilepath.downloadUrl.addOnCompleteListener {
+                        // it contains the online file path
+                        product_image_uri = it.result
+                        Constant.debugMessage(product_image_uri.toString(), tag = "product_image_uri")
+                    }.addOnSuccessListener {
                         // it contains the online file path
                         product_image_uri = it
                         Constant.debugMessage(product_image_uri.toString(), tag = "product_image_uri")
-                        //put the path in storage
-                        Constant.setString(requireContext(), Constant.IMAGEURI, it.toString())
                     }
                     addProduct(pname, price, detail)
-                    Navigation.findNavController(view).navigate(R.id.addProductFragment_to_shopFragment)
+                    Navigation.findNavController(screen_view).navigate(R.id.profileProductFragment_to_profileFragment)
                     Toast.makeText(this.context, "Upload Successful", Toast.LENGTH_LONG).show()
                 }
                 .addOnFailureListener{
@@ -165,56 +164,54 @@ class AddProductFragment : Fragment() {
     private fun addProduct(pname: String, price: String, detail: String) {
         //add directory and data to database
         db_reference.push()
-        val uname = Constant.getString(requireContext(), Constant.USERNAME)
-        val pword = Constant.getString(requireContext(), Constant.PASSWORD)
         db_reference.child("vendor")
-            .child("${uname}_${pword}")
+            .child("vendor_${user_name}_${user_password}")
             .child(Constant.PRODUCT)
             .child(pname)
             .setValue(ProductDataClass(product_image_uri.toString(), pname, price, detail))
-//            .setValue(ProductDataClass(product_image_uri.toString(), pname, price, detail))
         id_product_item_pname.text.clear()
         id_product_item_price.text.clear()
         id_product_item_detail.text.clear()
         Toast.makeText(activity, "Product updated", Toast.LENGTH_SHORT).show()
     }
 
-    private fun cancelButtonClicked(view:View) {
+    private fun cancelButtonClicked() {
         id_btn_cancel.setOnClickListener {
             id_product_item_pname.text.clear()
             id_product_item_price.text.clear()
             id_product_item_detail.text.clear()
-            Navigation.findNavController(view).navigate(R.id.addProductFragment_to_shopFragment)
+            Navigation.findNavController(screen_view).navigate(R.id.profileProductFragment_to_profileFragment)
             Toast.makeText(activity, "Product not updated", Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun chooseImage() {
         id_iv_product_img.setOnClickListener{v ->
-        val popup = AlertDialog.Builder(requireContext())
-        popup.setTitle("Get Image From")
-        popup.setPositiveButton("gallery") { dialog: DialogInterface, which: Int ->
-            val intent = Intent(Intent.ACTION_GET_CONTENT)
-            intent.type = "image/*"
-//            startActivityForResult(intent, Constant.REQUEST_IMAGE_GALLERY)
-            startActivityForResult(Intent.createChooser(intent, "Select Picture"), Constant.REQUEST_IMAGE_GALLERY)
+            val popup = AlertDialog.Builder(requireContext())
+            popup.setTitle("Get Image From")
+            popup.setPositiveButton("gallery") { _: DialogInterface, _: Int ->
+                val intent = Intent(Intent.ACTION_GET_CONTENT)
+                intent.type = "image/*"
+            startActivityForResult(intent, Constant.REQUEST_IMAGE_GALLERY)
+//                startActivityForResult(Intent.createChooser(intent, "Select Picture"), Constant.REQUEST_IMAGE_GALLERY)
 
-        }
-        popup.setNegativeButton("camera") { dialog: DialogInterface, which: Int ->
-            Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
-                activity?.let {
-                    takePictureIntent.resolveActivity(it.packageManager)?.also {
-                        val permission = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
-                        if (permission != PackageManager.PERMISSION_GRANTED){
-                            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.CAMERA), 1)
-                        }else{
-                            startActivityForResult(takePictureIntent, Constant.REQUEST_IMAGE_CAMERA)
+            }
+            popup.setNegativeButton("camera") { dialog: DialogInterface, which: Int ->
+                Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
+                    activity?.let {
+                        takePictureIntent.resolveActivity(it.packageManager)?.also {
+                            val permission = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
+                            if (permission != PackageManager.PERMISSION_GRANTED){
+                                ActivityCompat.requestPermissions(requireActivity(), arrayOf(
+                                    Manifest.permission.CAMERA), 1)
+                            }else{
+                                startActivityForResult(takePictureIntent, Constant.REQUEST_IMAGE_CAMERA)
+                            }
                         }
                     }
                 }
             }
-        }
-        popup.show()
+            popup.show()
         }
     }
 }

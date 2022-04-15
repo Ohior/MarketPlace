@@ -9,7 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.marketplace.R
-import com.example.marketplace.tool.VendorDataClass
+import com.example.marketplace.data.VendorDataClass
 import com.squareup.picasso.Picasso
 
 class VendorRecyclerAdapter(
@@ -22,6 +22,7 @@ class VendorRecyclerAdapter(
 
     interface OnClickListener{
         fun onItemClick(position: Int, view: View)
+        fun onLongItemClick(position: Int, view:View)
     }
 
     fun setOnItemClickListener(listener: OnClickListener){
@@ -29,7 +30,7 @@ class VendorRecyclerAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VendorViewHolder {
-        val view = LayoutInflater.from(context).inflate(R.layout.vendor_items, parent, false)
+        val view = LayoutInflater.from(context).inflate(R.layout.vendor_item2, parent, false)
         return VendorViewHolder(view, click_listener)
     }
 
@@ -53,7 +54,11 @@ class VendorRecyclerAdapter(
         val address: TextView = item_view.findViewById(R.id.id_tv_profile_address)
 
         init {
-            itemView.setOnClickListener{
+            item_view.setOnLongClickListener{
+                listener.onLongItemClick(adapterPosition, item_view)
+                true
+            }
+            item_view.setOnClickListener {
                 listener.onItemClick(adapterPosition, item_view)
             }
         }

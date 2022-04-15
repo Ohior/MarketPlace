@@ -41,15 +41,18 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginVertical="5dp"
         android:orientation="horizontal">
+
         <Button
+            android:id="@+id/id_btn_login"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:id="@+id/id_btn_login"
-            android:text="@string/log_in"
             android:layout_marginHorizontal="10dp"
-            style="@style/Widget.AppCompat.Button"/>
+            android:text="@string/vendor"
+            style="@style/myButton" />
+
         <Button
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -57,27 +60,68 @@
             android:id="@+id/id_btn_customer"
             android:text="@string/customer"
             android:layout_marginHorizontal="10dp"
-            style="@style/Widget.AppCompat.Button"/>
+            style="@style/myButton"/>
     </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="10dp"
+            android:textSize="20sp"
+            android:gravity="center_horizontal"
             android:text="@string/text_for_create_store"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal">
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/id_tv_create_store"
             android:gravity="center_horizontal"
             android:textColor="@color/red"
             android:text="@string/create_store"
-            android:textSize="20sp"
+            android:textSize="15sp"
+            android:layout_marginEnd="30dp"
             android:textStyle="italic"/>
-
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:textSize="20sp"
+            android:text="@string/or_click"/>
     </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="10dp"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/id_tv_create_customer"
+            android:textColor="@color/red"
+            android:text="@string/create_customer"
+            android:paddingHorizontal="10dp"
+            android:textSize="15sp"
+            android:textStyle="italic"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:textSize="20sp"
+            android:text="@string/customer_text"/>
+    </LinearLayout>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/id_btn_visitor"
+        android:text="@string/visitor"
+        android:padding="25dp"
+        android:visibility="gone"
+        android:layout_marginVertical="25dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginHorizontal="10dp"/>
 </LinearLayout>

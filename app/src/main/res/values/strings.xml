@@ -47,4 +47,52 @@
     <string name="message">Message</string>
     <string name="message_box">Message Box</string>
     <string name="enter_message">enter message</string>
-</resources>
+    <string name="or_click">or click</string>
+    <string name="customer_text">To be a customer</string>
+    <string name="create_customer">Create Customer</string>
+    <string name="save_location">Save Location</string>
+    <string name="no_location">No Location</string>
+    <string name="shop_owner_appear_here">Shop owner appear here</string>
+    <string name="send">Send</string>
+    <string name="sotw_north">Send</string>
+
+<!--    Storage String preference-->
+    <string name="sync_pref">sync</string>
+    <string name="sync_pref_summary">
+        Get you photos, videos, contacts,subscription etc all on one device
+    </string>
+
+    <string name="pref_syncConnectionType">Sync Connection type</string>
+    <string name="pref_syncConnectionType_dialog_title">Perform Sync Using</string>
+    <string name="pref_syncConnectionType_default_value">Perform Sync Using</string>
+    <string name="pref_syncConnectionType_summary">WiFi</string>
+    <string name="app_theme">Dark Theme</string>
+    <string name="set_theme_dark">Choose dark theme</string>
+    <string name="for_your_eyes">Make the screen less eye sensitive</string>
+    <string name="app_layout">App Layout</string>
+    <string name="set_app_layout">Set layout for app</string>
+    <string name="layout_style_default_value">Using Grid</string>
+    <string name="create">Create</string>
+    <string name="back">Back</string>
+    <string name="set_theme">Set Theme</string>
+    <string-array name="layout_style_entries">
+        <item>Grid</item>
+        <item>Vertical</item>
+    </string-array>
+    <string-array name="layout_style_values">
+        <item>Grid</item>
+        <item>Vertical</item>
+    </string-array>
+
+    <string-array name="pref_syncConnectionType_entries">
+        <item>Wifi</item>
+        <item>Mobile Data</item>
+        <item>WiFi/Mobile Data</item>
+    </string-array>
+
+    <string-array name="pref_syncConnectionType_values">
+        <item>Wifi</item>
+        <item>Mobile Data</item>
+        <item>WiFi Mobile</item>
+    </string-array>
+x</resources>

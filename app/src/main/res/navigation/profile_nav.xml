@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/profile_nav"
+    app:startDestination="@id/profileFragment">
+
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.marketplace.profile.ProfileFragment"
+        android:label="fragment_profile"
+        tools:layout="@layout/fragment_profile" >
+        <action
+            android:id="@+id/profileFragment_to_profileProductFragment"
+            app:destination="@id/profileProductFragment" />
+        <action
+            android:id="@+id/profileFragment_to_profileEditFragment"
+            app:destination="@id/profileEditFragment" />
+        <action
+            android:id="@+id/profileFragment_to_chatListFragment2"
+            app:destination="@id/chatListFragment2" />
+    </fragment>
+    <fragment
+        android:id="@+id/profileEditFragment"
+        android:name="com.example.marketplace.profile.ProfileEditFragment"
+        android:label="fragment_profile_edit"
+        tools:layout="@layout/fragment_profile_edit" >
+        <action
+            android:id="@+id/profileEditFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/profileProductFragment"
+        android:name="com.example.marketplace.profile.ProfileProductFragment"
+        android:label="fragment_profile_product"
+        tools:layout="@layout/fragment_profile_product" >
+        <action
+            android:id="@+id/profileProductFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/chatListFragment2"
+        android:name="com.example.marketplace.social.ChatListFragment"
+        android:label="fragment_chat_list"
+        tools:layout="@layout/fragment_chat_list" >
+        <action
+            android:id="@+id/chatListFragment2_to_profileFragment"
+            app:destination="@id/profileFragment" />
+        <action
+            android:id="@+id/chatListFragment2_to_chatFragment2"
+            app:destination="@id/chatFragment2" />
+    </fragment>
+    <fragment
+        android:id="@+id/chatFragment2"
+        android:name="com.example.marketplace.social.ChatFragment"
+        android:label="fragment_chat"
+        tools:layout="@layout/fragment_chat" >
+        <action
+            android:id="@+id/chatFragment2_to_chatListFragment2"
+            app:destination="@id/chatListFragment2" />
+    </fragment>
+</navigation>

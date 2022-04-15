@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="103dp">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:orientation="horizontal">
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.5"
+            android:src="@drawable/applogo"
+            android:contentDescription="@string/profile_image" />
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.7"
+            android:layout_margin="3dp"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/id_tv_profile_shop_name"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:paddingHorizontal="10dp"
+                android:text="@string/store_name"
+                android:textColor="@color/black"
+                android:textStyle="bold|italic" />
+
+            <TextView
+                android:id="@+id/id_tv_profile_address"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:minLines="2"
+                android:paddingHorizontal="10dp"
+                android:text="@string/address"
+                android:textSize="17sp"
+                android:textStyle="bold|italic" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:background="@color/blue" />
+</LinearLayout>

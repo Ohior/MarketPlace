@@ -1,380 +1,451 @@
 package com.example.marketplace.social
 
-import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
-import android.location.Location
-import android.location.LocationListener
-import android.location.LocationManager
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
 import android.os.Bundle
+import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import android.view.*
-import androidx.fragment.app.Fragment
-import android.widget.Button
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.app.ActivityCompat
+import androidx.fragment.app.Fragment
 import com.example.marketplace.R
 import com.example.marketplace.tool.Constant
+import com.example.marketplace.tool.Locator
 import com.example.marketplace.tool.Tool
 import com.google.android.gms.location.*
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import java.util.*
+import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+import kotlin.concurrent.thread
+import kotlin.math.roundToInt
+import kotlin.system.measureTimeMillis
+import android.view.animation.Animation
+
+import android.view.animation.RotateAnimation
+import com.example.marketplace.social.Compass.CompassListener
+import android.hardware.SensorManager
 
 
-class LocateFragment : Fragment() {
-    private val PERMISSION_ID: Int = 1000
+
+
+
+class LocateFragment : Fragment(), SensorEventListener {
+
     private lateinit var screen_view: View
     private lateinit var id_store_name: TextView
     private lateinit var id_tv_distance: TextView
     private lateinit var id_iv_locator: ImageView
-    private lateinit var id_btn_left: Button
-    private lateinit var id_btn_right: Button
-    private var float_angle: Float = 0.0f
-    private var float_distance: Float = 0.0f
-    private var super_latitude: Double = 0.0
-    private var super_longitude: Double = 0.0
+    private lateinit var id_tv_info: TextView
 
-//    private lateinit var fused_location_provider_client: FusedLocationProviderClient
-//    private lateinit var location_request: LocationRequest
-    private lateinit var location_manager: LocationManager
-    private var current_location: Location? = null
-    private lateinit var location_by_Gps: Location
-    private lateinit var location_by_network: Location
+    private var location_angle: Double = 0.0
+    private var location_distance: Double = 0.0
 
-    // Creating an instance of GPS LocationListener (package: android.location)
-    private val gps_location_listener: LocationListener = object : LocationListener {
-        override fun onLocationChanged(location: Location) {
-            location_by_Gps= location
-        }
-        override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}
-        override fun onProviderEnabled(provider: String) {}
-        override fun onProviderDisabled(provider: String) {}
-    }
-    // Creating an instance of GPS LocationListener (package: android.location)
-    val network_location_listener: LocationListener = object : LocationListener {
-        override fun onLocationChanged(location: Location) {
-            location_by_network = location
-        }
+    private var user_latitude = 0.0
+    private var user_longitude = 0.0
+    private var vendor_latitude = 0.0
+    private var vendor_longitude = 0.0
 
-        override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}
-        override fun onProviderEnabled(provider: String) {}
-        override fun onProviderDisabled(provider: String) {}
-    }
-
-    // FusedLocationProviderClient - Main class for receiving location updates.
-    private lateinit var fused_location_provider_client: FusedLocationProviderClient
-
-    // LocationRequest - Requirements for the location updates, i.e.,
-// how often you should receive updates, the priority, etc.
-    private lateinit var location_request: LocationRequest
-
-    // LocationCallback - Called when FusedLocationProviderClient
-// has a new Location
-    private lateinit var location_callback: LocationCallback
-
-
-//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-//        super.onCreateOptionsMenu(menu, inflater)
-//        inflater.inflate(R.menu.shop_menu, menu)
-//    }
-
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-////        return super.onOptionsItemSelected(item)
-//        return when (item.itemId){
-//            R.id.id_menu_location ->{
-//                Navigation.findNavController(screen_view).navigate(R.id.marketFragment_to_locateFragment)
-//                Toast.makeText(requireContext(), "select all", Toast.LENGTH_SHORT).show()
-//                true
-//            }
-//            else -> {
-//                //this makes it so menu item works in fragment
-//                NavigationUI.onNavDestinationSelected(item, view!!.findNavController())
-//                        || super.onOptionsItemSelected(item)
-//            }
-//        }
-//    }
+    private lateinit var compass_sensor_manager: SensorManager
+    private var accelerometer_sensor: Sensor? = null
+    private var magnetometer_sensor: Sensor? = null
+    private var accel_read = FloatArray(3)
+    private var magnetic_read = FloatArray(3)
+    private val current_degree = 0f
+    private var azimuth_angle = 0f
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //instantiate location variables
-        location_manager = requireActivity().getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        fused_location_provider_client = LocationServices.getFusedLocationProviderClient(requireActivity())
-        // Initialize locationRequest.
-        location_request = LocationRequest().apply {
-            // Sets the desired interval for
-            // active location updates.
-            // This interval is inexact.
-            interval = TimeUnit.SECONDS.toMillis(60)
+        // get the vendor (not the user) lat and long
+        vendor_latitude = Constant.getString(requireContext(), Constant.LATITUDE)?.toDouble()!!
+        vendor_longitude = Constant.getString(requireContext(), Constant.LONGITUDE)?.toDouble()!!
+        compass_sensor_manager = requireContext().getSystemService(Context.SENSOR_SERVICE) as SensorManager
+//        get accelerometer hardware from device
+        //        get accelerometer hardware from device
+        accelerometer_sensor = compass_sensor_manager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+//        get magnetometer hardware from device
+        //        get magnetometer hardware from device
+        magnetometer_sensor = compass_sensor_manager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)
+    }
 
-            // Sets the fastest rate for active location updates.
-            // This interval is exact, and your application will never
-            // receive updates more frequently than this value
-            fastestInterval = TimeUnit.SECONDS.toMillis(30)
+    override fun onPause() {
+        super.onPause()
+//        the sensors are unregistered (disconnected) in the onPause()
+//method when the activity pauses
+        compass_sensor_manager.unregisterListener(this)
+    }
 
-            // Sets the maximum time when batched location
-            // updates are delivered. Updates may be
-            // delivered sooner than this interval
-            maxWaitTime = TimeUnit.MINUTES.toMillis(2)
-
-            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        }
-        //Initialize locationCallback.
-
-        location_callback = object : LocationCallback() {
-            override fun onLocationResult(locationresult: LocationResult) {
-                super.onLocationResult(locationresult)
-                locationresult.lastLocation.let {
-                    current_location = location_by_Gps
-                    super_latitude = current_location!!.latitude
-                    super_longitude = current_location!!.longitude
-                    // use latitude and longitude as per your need
-                }
-            }
-        }
-
-        //let the FusedLocationProviderClient know that you want to receive updates
-        if (ActivityCompat.checkSelfPermission(requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
-        ) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            Looper.myLooper()?.let {
-                fused_location_provider_client.requestLocationUpdates(location_request, location_callback, it)
-            }
-            return
-        }
-
-        //When the app no longer needs access to location information, it’s important to unsubscribe from location updates.
-        val removeTask = fused_location_provider_client.removeLocationUpdates(location_callback)
-        removeTask.addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                Constant.debugMessage("Location Callback removed.")
-                Tool.showShortToast(requireContext(), "Location Callback removed.")
-            } else {
-                Constant.debugMessage("Failed to remove Location Callback.")
-                Tool.showShortToast(requireContext(), "Failed to remove Location Callback.")
-            }
-        }
-
-
+    override fun onResume() {
+        super.onResume()
+        //        the sensor listeners are registered meaning
+//        that the sensors are powered on again when the activity resumes
+        compass_sensor_manager.registerListener(this, accelerometer_sensor, SensorManager.SENSOR_DELAY_UI)
+        compass_sensor_manager.registerListener(this, magnetometer_sensor, SensorManager.SENSOR_DELAY_UI)
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? {
-        // Inflate the layout for this fragment
+    ): View {
         screen_view = inflater.inflate(R.layout.fragment_locate, container, false)
         id_store_name = screen_view.findViewById(R.id.id_store_name)
         id_iv_locator = screen_view.findViewById(R.id.id_iv_locator)
-        id_btn_left = screen_view.findViewById(R.id.id_btn_left)
-        id_btn_right = screen_view.findViewById(R.id.id_btn_right)
+        id_tv_info = screen_view.findViewById(R.id.id_tv_info)
         id_tv_distance = screen_view.findViewById(R.id.id_tv_distance)
 
-//        leftButtonClicked()
-//        rightButtonClicked()
-//        LocatorFunction()
-
-        isLocationPermissionGranted()
-        locationExecution()
-        mostAccurateLocation()
-        workWithLocation { latitude, longitude ->
-            Tool.debugMessage("$latitude and $longitude")
-        }
-
-        //configure this fragment for menu
-        setHasOptionsMenu(true)
-        return screen_view.rootView
+        return screen_view
     }
 
-    private fun workWithLocation(function:(Double, Double)->Unit){
-        if (location_by_Gps.accuracy > location_by_network.accuracy) {
-            current_location = location_by_Gps
-            super_latitude = current_location!!.latitude
-            super_longitude = current_location!!.longitude
-            // use latitude and longitude as per your need
-        } else {
-            current_location = location_by_network
-            super_latitude = current_location!!.latitude
-            super_longitude = current_location!!.longitude
-            // use latitude and longitude as per your need
+    override fun onSensorChanged(event: SensorEvent) {
+        val tv_degrees = id_tv_info
+        val iv_compass = id_iv_locator
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            accel_read = event.values
         }
-        function(super_latitude, super_longitude)
-    }
-
-    private fun locationExecution() {
-        if (isGPSEnabled()){
-            if (ActivityCompat.checkSelfPermission(requireContext(),
-                    Manifest.permission.ACCESS_FINE_LOCATION) !=
-                PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(requireContext(),
-                    Manifest.permission.ACCESS_COARSE_LOCATION) !=
-                PackageManager.PERMISSION_GRANTED
-            ) {
-                location_manager.requestLocationUpdates(
-                    LocationManager.GPS_PROVIDER,
-                    5000,
-                    0f,
-                    gps_location_listener
-                )
-            }
+        if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
+            magnetic_read = event.values
         }
-        if (isNetworkEnabled()){
-            location_manager.requestLocationUpdates(
-                LocationManager.NETWORK_PROVIDER,
-                5000,
-                0F,
-                network_location_listener
-            )
+        val r = FloatArray(9)
+        val i = FloatArray(9)
+        //            to get the rotation matrix R of the device as
+//            follows
+        val successfulread = SensorManager.getRotationMatrix(r, i, accel_read, magnetic_read)
+        //        If this operation is successful, the successful_read variable will be
+//        true and the rotation matrix will be stored in the variable R
+        if (successfulread) {
+            val orientation = FloatArray(3)
+            SensorManager.getOrientation(i, orientation)
+            azimuth_angle = orientation[0]
+            val degrees = azimuth_angle * 180f / 3.14f
+            val degreesInt = degrees.roundToInt()
+            val mess = degreesInt.toString() + 0x00B0.toChar() + "To absolute North"
+            tv_degrees.text = mess
+            //                Declare a RotateAnimation object to Rotate the image on imageView
+            val rotate = RotateAnimation(current_degree,
+                (-degreesInt).toFloat(), Animation.RELATIVE_TO_SELF,
+                0.5f, Animation.RELATIVE_TO_SELF, 0.0f)
+            //            set the animation Duration
+            rotate.duration = 100
+            rotate.fillAfter = true
+            //            rotate the imageview
+            iv_compass.startAnimation(rotate)
         }
     }
 
-    // check for most accurate location
-    private fun mostAccurateLocation(){
-        if (ActivityCompat.checkSelfPermission(requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION) !=
-            PackageManager.PERMISSION_GRANTED &&
-            ActivityCompat.checkSelfPermission(requireContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION) !=
-            PackageManager.PERMISSION_GRANTED
-        ) {
-            val last_kown_location_by_GPS = location_manager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-            last_kown_location_by_GPS?.let {
-                location_by_Gps = last_kown_location_by_GPS
-            }
-        }
-
-        val last_kown_location_by_network =
-            location_manager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
-        last_kown_location_by_network?.let {
-            location_by_network = last_kown_location_by_network
-        }
+    override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
     }
-
-    private fun isGPSEnabled():Boolean{
-    //  Check that if the GPS is available
-        return location_manager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-
-    }
-
-    private fun isNetworkEnabled():Boolean{
-    //  Check that if the GPS is available
-        return location_manager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
-    }
-
-    private fun isLocationPermissionGranted():Boolean{
-        //  checking that location permission is granted or not.
-        //  If Manifest.permission is not granted then ask for the permissions in run time
-        return if(ActivityCompat.checkSelfPermission(
-                requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-            ActivityCompat.checkSelfPermission(
-                requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-        ){
-            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION), PERMISSION_ID)
-            false
-        }else{
-            true
-        }
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//    private fun LocatorFunction() {
-//        Tool.rotateAnimation(id_iv_locator, float_angle)
-//    }
-//
-//    // check for permissions
-//    private fun checkForPermission():Boolean {
-//        if (ActivityCompat.checkSelfPermission(
-//                requireContext(),
-//                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
-//            ActivityCompat.checkSelfPermission(
-//                requireContext(),
-//                Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-//            return true
-//        }
-//        return false
-//    }
-//
-//    // get user permission
-//    private fun requestPermissions(){
-//        ActivityCompat.requestPermissions(
-//            requireActivity(),
-//            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION,
-//            Manifest.permission.ACCESS_COARSE_LOCATION),
-//            PERMISSION_ID
-//        )
-//    }
-//
-//    // check if user location is enabled
-//    private fun isLocationEnabled():Boolean {
-//        val locationmanager = context?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-//
-//        return (locationmanager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
-//                locationmanager.isProviderEnabled(LocationManager.NETWORK_PROVIDER))
-//    }
-
-    // get location
-//    private fun getLocation(){
-//        //check for permision
-//        if (checkForPermission()) {
-//            // check if location service is enabled
-//            if (isLocationEnabled()){
-//                //get the location
-//                fused_location_provider_client.lastLocation.addOnCompleteListener { task ->
-//                    val location = task.result
-//                    if (location == null){
-//                        // we will get new user location
-//                    }else{
-//                        val mess = "Your current  location are \n LAT: ${location.latitude}" +
-//                                "and LONG: ${location.longitude}"
-//                        id_tv_distance.text = mess
-//                    }
-//                }
-//            }else{
-//                Tool.showLongToast(requireContext(),  "Please Enable Your Location")
-//            }
-//        }else{
-//            requestPermissions()
-//        }
-//    }
-//
-//    private fun rightButtonClicked() {
-//        id_btn_right.setOnClickListener{
-//            Tool.showShortToast(requireContext(), "Right button clicked")
-//        }
-//    }
-//
-//    private fun leftButtonClicked() {
-//        id_btn_left.setOnClickListener{
-//            Tool.showShortToast(requireContext(), "Left button clicked")
-//        }
-//    }
 }
+//class LocateFragment : Fragment(){
+//    private lateinit var screen_view: View
+//    private lateinit var id_store_name: TextView
+//    private lateinit var id_tv_distance: TextView
+//    private lateinit var id_iv_locator: ImageView
+//    private lateinit var id_tv_info: TextView
+//
+//    private var location_angle: Double = 0.0
+//    private var location_distance: Double = 0.0
+//
+//    private var user_latitude = 0.0
+//    private var user_longitude = 0.0
+//    private var vendor_latitude = 0.0
+//    private var vendor_longitude = 0.0
+//
+
+
+//    private lateinit var compass_class: Compass
+//    private var currentAzimuth = 0.0F
+//    private lateinit var sotw_formatter: SOTWFormatter
+//
+//        private var mHandler: Handler? = null
+//    private val mInterval = 1000 // 5 seconds by default, can be changed later
+//
+//
+//    override fun onCreate(savedInstanceState: Bundle?) {
+//        super.onCreate(savedInstanceState)
+//        // get the vendor (not the user) lat and long
+//        vendor_latitude = Constant.getString(requireContext(), Constant.LATITUDE)?.toDouble()!!
+//        vendor_longitude = Constant.getString(requireContext(), Constant.LONGITUDE)?.toDouble()!!
+//        sotw_formatter = SOTWFormatter(requireContext())
+//        mHandler = Handler()
+//    }
+//
+//    override fun onStart() {
+//        super.onStart()
+//        compass_class.start()
+//    }
+//
+//    override fun onPause() {
+//        super.onPause()
+//        compass_class.stop()
+//    }
+//
+//    override fun onResume() {
+//        super.onResume()
+//        compass_class.start()
+//    }
+//
+//    override fun onStop() {
+//        super.onStop()
+//        compass_class.stop()
+//    }
+//
+//    override fun onCreateView(
+//        inflater: LayoutInflater,
+//        container: ViewGroup?,
+//        savedInstanceState: Bundle?,
+//    ): View {
+//        screen_view = inflater.inflate(R.layout.fragment_locate, container, false)
+//        id_store_name = screen_view.findViewById(R.id.id_store_name)
+//        id_iv_locator = screen_view.findViewById(R.id.id_iv_locator)
+//        id_tv_info = screen_view.findViewById(R.id.id_tv_info)
+//        id_tv_distance = screen_view.findViewById(R.id.id_tv_distance)
+//
+//
+//        setUpCompass()
+//        return screen_view
+//    }
+//
+//    private fun setUpCompass() {
+//        compass_class = Compass(requireContext())
+//        val cl = getCompassListener()
+//        compass_class.setListener(cl)
+//    }
+//
+//    private fun adjustArrow(azimuth:Float){
+//        val an: Animation = RotateAnimation(-currentAzimuth, -azimuth,
+//            Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF,
+//            0.5f)
+//        currentAzimuth = azimuth
+//
+//        an.duration = 500
+//        an.repeatCount = 0
+//        an.fillAfter = true
+//
+//        id_iv_locator.startAnimation(an)
+//    }
+//
+//    private fun  adjustSotwLabel(azimuth: Float){
+//        id_tv_info.text = sotw_formatter.format(azimuth)
+//    }
+//
+//    private fun getCompassListener(): Compass.CompassListener? {
+//        return object : CompassListener {
+//            override fun onNewAzimuth(azimuth: Float) {
+//                // UI updates only in UI thread
+//                // https://stackoverflow.com/q/11140285/444966
+//                locateThread {
+//                    adjustArrow(azimuth)
+//                    adjustSotwLabel(azimuth)
+////                    currentAzimuth -= Tool.getBearing(user_latitude, user_longitude, vendor_latitude, vendor_longitude).toFloat()
+//                    Tool.debugMessage(currentAzimuth.toString(), "BEARING")
+//                }.run()
+//            }
+//        }
+//    }
+//
+//    private fun locateThread(function:()->Unit):Runnable{
+//        val mStatusChecker: Runnable = object : Runnable {
+//            override fun run() {
+//                try {
+//                    function()
+//                } finally {
+//                    // 100% guarantee that this always happens, even if
+//                    // your update method throws an exception
+//                    mHandler!!.postDelayed(this, mInterval.toLong())
+//                }
+//            }
+//        }
+//        return mStatusChecker
+//    }
+//}
+
+//class LocateFragment : Fragment() {
+//    private lateinit var screen_view: View
+//    private lateinit var id_store_name: TextView
+//    private lateinit var id_tv_distance: TextView
+//    private lateinit var id_iv_locator: ImageView
+//    private lateinit var id_tv_info: TextView
+//
+//    private var location_angle: Double = 0.0
+//    private var location_distance: Double = 0.0
+//
+//    private var user_latitude = 0.0
+//    private var user_longitude = 0.0
+//    private var vendor_latitude = 0.0
+//    private var vendor_longitude = 0.0
+//
+//    private lateinit var locator_manager: Locator
+//
+//    private lateinit var location_request: LocationRequest
+//    private lateinit var location_callback: LocationCallback
+//
+//
+//    private val mInterval = 1000 // 5 seconds by default, can be changed later
+//
+//    private var mHandler: Handler? = null
+//
+//    override fun onRequestPermissionsResult(
+//        requestCode: Int,
+//        permissions: Array<out String>,
+//        grantResults: IntArray,
+//    ) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+//        if (requestCode == Constant.REQUEST_LOCATION_PERMISSION && grantResults.isNotEmpty()){
+//            if (grantResults[0] == PackageManager.PERMISSION_GRANTED){
+//                setLocationUpdate()
+//            }else{
+//                stopLocationService()
+//                Tool.showShortToast(requireContext(), "Permission is required for location to work properly")
+//            }
+//        }
+//    }
+//
+//
+//    override fun onCreate(savedInstanceState: Bundle?) {
+//        super.onCreate(savedInstanceState)
+//        requireActivity().actionBar?.hide()
+//
+//        locator_manager = Locator(requireActivity(), requireContext())
+//        // check if you have permission to use permission the request
+//        if (!locator_manager.checkLocationPermission())
+//            locator_manager.requestLocationPermissions(Constant.REQUEST_LOCATION_PERMISSION)
+//        // check if location is enabled
+//        if (!locator_manager.isLocationEnabled()) locator_manager.openLocationSetting()
+//
+//        // get the vendor (not the user) lat and long
+//        vendor_latitude = Constant.getString(requireContext(), Constant.LATITUDE)?.toDouble()!!
+//        vendor_longitude = Constant.getString(requireContext(), Constant.LONGITUDE)?.toDouble()!!
+//        setHasOptionsMenu(false)
+//    }
+//
+//    override fun onCreateView(
+//        inflater: LayoutInflater,
+//        container: ViewGroup?,
+//        savedInstanceState: Bundle?,
+//    ): View {
+//        screen_view = inflater.inflate(R.layout.fragment_locate, container, false)
+//        id_store_name = screen_view.findViewById(R.id.id_store_name)
+//        id_iv_locator = screen_view.findViewById(R.id.id_iv_locator)
+//        id_tv_info = screen_view.findViewById(R.id.id_tv_info)
+//        id_tv_distance = screen_view.findViewById(R.id.id_tv_distance)
+//
+//        mHandler = Handler()
+//        mStatusChecker.run()
+//
+//
+//        locationCallback()
+//
+//        locationRequest()
+//
+//        setLocationUpdate()
+//
+//        return screen_view
+//    }
+//
+//    var mStatusChecker: Runnable = object : Runnable {
+//        override fun run() {
+//            try {
+//                rotateLocatorImage()
+//            } finally {
+//                // 100% guarantee that this always happens, even if
+//                // your update method throws an exception
+//                mHandler!!.postDelayed(this, mInterval.toLong())
+//            }
+//        }
+//    }
+//
+//
+//    private fun rotateLocatorImage() {
+//        val angle = locator_manager.getAngleBetweenTwoPoint(
+//            user_latitude,
+//            user_longitude,
+//            vendor_latitude,
+//            vendor_longitude
+//        )
+//        val distance1 = locator_manager.getDistanceBetweenTwoPosition(
+//            user_latitude,
+//            user_longitude,
+//            vendor_latitude,
+//            vendor_longitude
+//        )
+//        val distance2 = locator_manager.getDistanceBetweenTwoPoint(
+//            user_latitude,
+//            user_longitude,
+//            vendor_latitude,
+//            vendor_longitude
+//        )
+//
+//        id_iv_locator.setOnClickListener{
+//            Tool.showShortToast(requireContext(), angle.toString())
+//        }
+//        Tool.rotateAnimation(id_iv_locator, angle.toFloat())
+//        val message1 =  "You are ${distance1.roundToInt()} meters from you location (position)"
+//        val message2 =  "You are ${distance2.roundToInt()} meters from you location (point) $angle"
+//        id_tv_distance.text = message1
+//        id_tv_info.text = message2
+//    }
+//
+//    private fun locationRequest(){
+//        location_request = LocationRequest()
+//        location_request.interval = 4000
+//        location_request.fastestInterval = 2000
+//        location_request.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+//    }
+//
+//    private fun locationCallback(){
+//        location_callback = object: LocationCallback(){
+//            override fun onLocationResult(lr: LocationResult) {
+//                super.onLocationResult(lr)
+//                user_latitude = lr.lastLocation.latitude
+//                user_longitude = lr.lastLocation.longitude
+//                Tool.showShortToast(requireContext(), "Latitude $user_latitude Longitude $user_longitude")
+//                Tool.debugMessage("Latitude $user_latitude Longitude $user_longitude")
+//            }
+//        }
+//    }
+//
+//    private fun setLocationUpdate(){
+//        if(locator_manager.checkLocationPermission()){
+//            LocationServices.getFusedLocationProviderClient(requireContext())
+//                .requestLocationUpdates(location_request, location_callback, Looper.getMainLooper())
+//            startLocationService()
+//        }else{
+//            stopLocationService()
+//            locator_manager.requestLocationPermissions(Constant.REQUEST_LOCATION_PERMISSION)
+//        }
+//    }
+//
+//    override fun onDestroyView() {
+//        super.onDestroyView()
+//        LocationServices.getFusedLocationProviderClient(requireContext())
+//            .removeLocationUpdates(location_callback)
+//        stopLocationService()
+//    }
+//
+//    private fun startLocationService(){
+//        val intent = Intent(requireContext(), NotificationService::class.java)
+//        intent.action = Constant.ACTION_START_LOCATION_SERVICE
+//        requireContext().startService(intent)
+//        Tool.showShortToast(requireContext(), "Location Service Started")
+//
+//    }
+//
+//    private fun stopLocationService(){
+//        val intent = Intent(requireContext(), NotificationService::class.java)
+//        intent.action = Constant.ACTION_STOP_LOCATION_SERVICE
+//        requireContext().startService(intent)
+//        Tool.showShortToast(requireContext(), "Location Service Stop")
+//
+//    }
+//}

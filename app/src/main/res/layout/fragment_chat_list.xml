@@ -5,10 +5,10 @@
     android:layout_height="match_parent"
     tools:context=".social.ChatListFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        android:id="@+id/id_rv_chat_list"
+        tools:listitem="@layout/vendor_items"/>
 
 </FrameLayout>
