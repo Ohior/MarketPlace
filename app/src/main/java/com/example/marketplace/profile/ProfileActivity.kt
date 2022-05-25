@@ -1,18 +1,16 @@
 package com.example.marketplace.profile
 
+import android.app.Fragment
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.example.marketplace.MainActivity
 import com.example.marketplace.R
 import com.example.marketplace.setting.SettingActivity
-import com.example.marketplace.tool.Constant
+import com.example.marketplace.tool.Tool
 import com.google.firebase.auth.FirebaseAuth
-import java.lang.Exception
-import java.lang.RuntimeException
 import java.lang.reflect.Method
 
 
@@ -30,6 +28,7 @@ class ProfileActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.shop_menu, menu)
 //        return super.onCreateOptionsMenu(menu)
+        menu?.findItem(R.id.id_menu_location)?.isVisible = false
         return true
     }
 
@@ -57,12 +56,23 @@ class ProfileActivity : AppCompatActivity() {
             R.id.id_menu_logout ->{
                 firebase_auth.signOut()
                 this.finish()
-                startActivity(Intent(this, MainActivity::class.java))
+                startActivity(Intent(applicationContext, MainActivity::class.java))
                 true
             }
             else -> {
                 super.onOptionsItemSelected(item)
             }
+        }
+
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        val currentFragment: Fragment = this.fragmentManager.findFragmentById(R.id.profileFragment)
+        if (currentFragment == ProfileFragment::class.java){
+            finish()
+            startActivity(Intent(applicationContext, MainActivity::class.java))
+            Tool.showShortToast(applicationContext, "exiting your profile")
         }
 
     }

@@ -10,13 +10,13 @@
     <string name="log_in">Log In</string>
     <string name="customer">Customer</string>
     <string name="text_for_create_store">If you want to create a store click</string>
-    <string name="create_store">Create Store</string>
+    <string name="create_store">Create Vendor</string>
 
     <string name="username">username</string>
     <string name="login">Login</string>
     <string name="word1">Don\'t have an account? Create account as </string>
     <string name="vendor">Vendor</string>
-    <string name="visitor">Or Explore</string>
+    <string name="visitor">Explore</string>
     <string name="sign_up">Sign Up</string>
     <string name="phone_number">phone number</string>
     <string name="store_name">store name</string>
@@ -56,7 +56,7 @@
     <string name="send">Send</string>
     <string name="sotw_north">Send</string>
 
-<!--    Storage String preference-->
+    <!--    Storage String preference-->
     <string name="sync_pref">sync</string>
     <string name="sync_pref_summary">
         Get you photos, videos, contacts,subscription etc all on one device
@@ -66,15 +66,18 @@
     <string name="pref_syncConnectionType_dialog_title">Perform Sync Using</string>
     <string name="pref_syncConnectionType_default_value">Perform Sync Using</string>
     <string name="pref_syncConnectionType_summary">WiFi</string>
-    <string name="app_theme">Dark Theme</string>
+    <string name="app_theme">apptheme</string>
     <string name="set_theme_dark">Choose dark theme</string>
-    <string name="for_your_eyes">Make the screen less eye sensitive</string>
+    <string name="for_your_eyes">Use pitch dark for the app</string>
     <string name="app_layout">App Layout</string>
     <string name="set_app_layout">Set layout for app</string>
     <string name="layout_style_default_value">Using Grid</string>
     <string name="create">Create</string>
     <string name="back">Back</string>
     <string name="set_theme">Set Theme</string>
+    <string name="set_shop_layout">Set Shop Layout</string>
+    <string name="grid_layout">Grid Layout</string>
+    <string name="vertical_layout">Vertical Layout</string>
     <string-array name="layout_style_entries">
         <item>Grid</item>
         <item>Vertical</item>
@@ -84,15 +87,26 @@
         <item>Vertical</item>
     </string-array>
 
-    <string-array name="pref_syncConnectionType_entries">
-        <item>Wifi</item>
-        <item>Mobile Data</item>
-        <item>WiFi/Mobile Data</item>
-    </string-array>
+    <style name="appTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
+        <item name="colorAccent">@color/accent</item>
+    </style>
+    <!-- Preference Titles -->
+    <string name="messages_header">Messages</string>
+    <string name="sync_header">Sync</string>
 
-    <string-array name="pref_syncConnectionType_values">
-        <item>Wifi</item>
-        <item>Mobile Data</item>
-        <item>WiFi Mobile</item>
-    </string-array>
-x</resources>
+    <!-- Messages Preferences -->
+    <string name="signature_title">Your signature</string>
+    <string name="reply_title">Default reply action</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="create_vendor">create vendor</string>
+    <string name="hide">Hide</string>
+    <string name="show">Show</string>
+</resources>

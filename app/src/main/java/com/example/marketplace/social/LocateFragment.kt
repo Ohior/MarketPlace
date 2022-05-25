@@ -35,9 +35,10 @@ import android.view.animation.Animation
 import android.view.animation.RotateAnimation
 import com.example.marketplace.social.Compass.CompassListener
 import android.hardware.SensorManager
-
-
-
+import com.example.marketplace.data.UserDatabase
+import com.example.marketplace.shop.ShopActivity
+import java.math.BigDecimal
+import java.math.MathContext
 
 
 class LocateFragment : Fragment(), SensorEventListener {
@@ -64,11 +65,13 @@ class LocateFragment : Fragment(), SensorEventListener {
     private val current_degree = 0f
     private var azimuth_angle = 0f
 
+    private lateinit var locator_manager: Locator
+
+    private lateinit var vendor_database: UserDatabase
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // get the vendor (not the user) lat and long
-        vendor_latitude = Constant.getString(requireContext(), Constant.LATITUDE)?.toDouble()!!
-        vendor_longitude = Constant.getString(requireContext(), Constant.LONGITUDE)?.toDouble()!!
+        vendor_database = UserDatabase(requireContext(), Constant.VENDOR_DB_NAME)
         compass_sensor_manager = requireContext().getSystemService(Context.SENSOR_SERVICE) as SensorManager
 //        get accelerometer hardware from device
         //        get accelerometer hardware from device
@@ -76,6 +79,15 @@ class LocateFragment : Fragment(), SensorEventListener {
 //        get magnetometer hardware from device
         //        get magnetometer hardware from device
         magnetometer_sensor = compass_sensor_manager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)
+        locator_manager = Locator(requireActivity(), requireContext())
+        // get the vendor (not the user) lat and long
+        try {
+            vendor_latitude = vendor_database.getFromDataBase()!!.latitude.toDouble()
+            vendor_longitude = vendor_database.getFromDataBase()!!.latitude.toDouble()
+        }catch (e:NumberFormatException){
+            startActivity(Intent(requireContext(), ShopActivity::class.java))
+            Tool.showShortToast(requireContext(), "Vendor does not have a location")
+        }
     }
 
     override fun onPause() {
@@ -108,38 +120,53 @@ class LocateFragment : Fragment(), SensorEventListener {
     }
 
     override fun onSensorChanged(event: SensorEvent) {
-        val tv_degrees = id_tv_info
-        val iv_compass = id_iv_locator
-        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+        val tvdegrees = id_tv_info
+        val ivcompass = id_iv_locator
+
+        if (event.sensor.type == Sensor.TYPE_ACCELEROMETER) {
             accel_read = event.values
         }
-        if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
+
+        if (event.sensor.type == Sensor.TYPE_MAGNETIC_FIELD) {
             magnetic_read = event.values
         }
+
         val r = FloatArray(9)
         val i = FloatArray(9)
-        //            to get the rotation matrix R of the device as
-//            follows
+
+        //  to get the rotation matrix R of the device as follows
         val successfulread = SensorManager.getRotationMatrix(r, i, accel_read, magnetic_read)
-        //        If this operation is successful, the successful_read variable will be
-//        true and the rotation matrix will be stored in the variable R
+        //  If this operation is successful, the successful_read variable will be
+        //  true and the rotation matrix will be stored in the variable R
+
         if (successfulread) {
             val orientation = FloatArray(3)
             SensorManager.getOrientation(i, orientation)
             azimuth_angle = orientation[0]
+            // adjust angle to user location
+            azimuth_angle -= Tool.getBearing(user_latitude, user_longitude, vendor_latitude, vendor_longitude).toFloat()
             val degrees = azimuth_angle * 180f / 3.14f
-            val degreesInt = degrees.roundToInt()
-            val mess = degreesInt.toString() + 0x00B0.toChar() + "To absolute North"
-            tv_degrees.text = mess
-            //                Declare a RotateAnimation object to Rotate the image on imageView
-            val rotate = RotateAnimation(current_degree,
-                (-degreesInt).toFloat(), Animation.RELATIVE_TO_SELF,
-                0.5f, Animation.RELATIVE_TO_SELF, 0.0f)
-            //            set the animation Duration
-            rotate.duration = 100
-            rotate.fillAfter = true
-            //            rotate the imageview
-            iv_compass.startAnimation(rotate)
+            val degreesInt = degrees.toString()
+
+            val mess = "${String.format("%.2f", degreesInt)} ${0x00B0.toChar()} from North ${
+                locator_manager.getDistanceBetweenTwoPoint(
+                    user_latitude, user_longitude, vendor_latitude, vendor_longitude
+                ).roundToInt()
+            } Meter(s)"
+
+            tvdegrees.text = mess
+            //  declare a RotateAnimation object to Rotate the image on imageView
+            //  val rotate = RotateAnimation(current_degree,
+            //      (-degreesInt).toFloat(), Animation.RELATIVE_TO_SELF,
+            //      0.5f, Animation.RELATIVE_TO_SELF, 0.0f)
+//            val rotate = RotateAnimation(current_degree, degrees, Animation.RELATIVE_TO_SELF,
+//                0.5f, Animation.RELATIVE_TO_SELF, 0.0f)
+//            //            set the animation Duration
+//            rotate.duration = 100
+//            rotate.fillAfter = true
+//            //            rotate the imageview
+//            ivcompass.startAnimation(rotate)
+            Tool.rotateAnimation(ivcompass, degrees, 100)
         }
     }
 

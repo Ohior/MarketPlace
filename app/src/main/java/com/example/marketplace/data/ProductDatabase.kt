@@ -7,113 +7,84 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
 class ProductDatabase(
-    context: Context, dbname: String,
-): SQLiteOpenHelper(context, dbname, null, 1) {
-    override fun onCreate(db: SQLiteDatabase?) {
-        db?.execSQL("CREATE TABLE ProductDatabase(" +
-                "uid PRIMARY KEY, imageuri TEXT, product TEXT, " +
-                "price TEXT, detail TEXT)")
+    private val context: Context, private val db_name: String,
+): SQLiteOpenHelper(context, db_name, null, 1) {
+    override fun onCreate(db: SQLiteDatabase) {
+        val query =
+            "CREATE TABLE IF NOT EXISTS $db_name( uid integer PRIMARY KEY, imguri text, productname text, price text, detail text)"
+        db.execSQL(query)
     }
 
-    override fun onUpgrade(db: SQLiteDatabase?, p1: Int, p2: Int) {
-        db?.execSQL("DROP TABLE IF EXISTS ProductDatabase");
+    override fun onUpgrade(db: SQLiteDatabase, p1: Int, p2: Int) {
+        val query = "DROP TABLE IF EXISTS $db_name"
+        db.execSQL(query)
+        onCreate(db)
     }
 
-    fun insertUserData(function:(ContentValues)-> ContentValues): Boolean {
-        val contentvalues = ContentValues()
+    fun insertIntoDatabase(pdc:ProductDataClass):Boolean{
         val db = this.writableDatabase
-        val contentv = function(contentvalues)
-        val result = db.insert("ProductDatabase", null, contentv)
-        return result != -1L
+        val values = ContentValues()
+        values.put("imguri", pdc.imguri);
+        values.put("productname", pdc.product);
+        values.put("price", pdc.price);
+        values.put("detail", pdc.detail);
+        val insertId = db.insert(db_name, null, values);
+        db.close(); // Closing database connection
+        return insertId != 1L
     }
 
-    fun updateUserDataById(uid:Int, function:(ContentValues)-> ContentValues): Boolean {
-        val contentvalues = ContentValues()
-        val db = this.writableDatabase
-        val contentv = function(contentvalues)
-        //cursor is selecting the row. what ever is selected is loaded in the cursor
-        val cursor = db.rawQuery("Select * from ProductDatabase where uid = ? ",
-            arrayOf(uid.toString()))
-        //check if data is in database have some data
-        if (cursor.count > 0) {
-            val result = db.update("ProductDatabase", contentv, "uid=?", arrayOf(uid.toString())).toLong()
-            return result != -1L
+    fun getFromDataBase(uid: Int): ProductDataClass? {
+        val uuid = uid+1
+        val db = this.readableDatabase
+        val cursor: Cursor? = db.rawQuery("SELECT * FROM $db_name WHERE uid = $uuid", null)
+//        val cursor = db.query(
+//            db_name,
+//            arrayOf("imguri", "productname", "price", "detail"),
+//            "uid = ?",
+//            arrayOf(uid.toString()),
+//            null,
+//            null,
+//            null,
+//        )
+        cursor?.moveToFirst()
+        val pdc = cursor?.let {
+            ProductDataClass(
+                imguri = cursor.getString(1),
+                product = cursor.getString(2),
+                price = cursor.getString(3),
+                detail = cursor.getString(4),
+            )
         }
+        cursor?.close()
+        return pdc
+    }
+
+    // Deleting database
+    fun deleteDatabaseTable() {
+        val db = this.writableDatabase
+        db.rawQuery("DELETE FROM $db_name", null).close()
+        db.delete(db_name,null,null)
+        db.close()
+    }
+
+    //Delete specific
+    fun deleteDatabaseById(uid: Int): ProductDataClass? {
+        val data = getFromDataBase(uid)
+        val db = this.writableDatabase
+        //db.rawQuery("DELETE * FROM $db_name WHERE uid = ?", arrayOf(uid.toString())).close()
+        db.delete(db_name, "uid = ?", arrayOf(uid.toString()))
+        db.close()
+        return data
+    }
+
+    // Getting database Count
+    fun getDatabaseCount(): Int {
+        val countQuery = "SELECT  * FROM $db_name"
+        val db = this.readableDatabase
+        val cursor = db.rawQuery(countQuery, null)
+        val size = cursor.count
         cursor.close()
-        return false
-    }
-
-    fun updateUserDataByName(product:String, function:(ContentValues)-> ContentValues): Boolean {
-        val contentvalues = ContentValues()
-        val db = this.writableDatabase
-        val contentv = function(contentvalues)
-        //cursor is selecting the row. what ever is selected is loaded in the cursor
-        val cursor = db.rawQuery("Select * from ProductDatabase where product = ? ",
-            arrayOf(product))
-        //check if data is in database have some data
-        if (cursor.count > 0) {
-            val result = db.update("ProductDatabase", contentv, "product=?", arrayOf(product)).toLong()
-            return result != -1L
-        }
-        cursor.close()
-        return false
-    }
-
-
-    fun deleteUserDataByName(product: String): Boolean {
-        val db = this.writableDatabase
-        //cursor is selecting the row. what ever is selected is loaded in the cursor
-        val cursor = db.rawQuery("Select * from ProductDatabase where product = ? ", arrayOf(product))
-        //check if tata is in database have some data
-        if (cursor.count > 0) {
-            val result = db.delete("ProductDatabase", "product=?", arrayOf(product)).toLong()
-            return result != -1L
-        }
-        cursor.close()
-        return false
-    }
-
-    fun deleteUserDataById(uid: Int): Boolean {
-        val db = this.writableDatabase
-        //cursor is selecting the row. what ever is selected is loaded in the cursor
-        val cursor = db.rawQuery("Select * from ProductDatabase where uid = ? ", arrayOf(uid.toString()))
-        //check if tata is in database have some data
-        if (cursor.count > 0) {
-            val result = db.delete("ProductDatabase", "uid=?", arrayOf(uid.toString())).toLong()
-            return result != -1L
-        }
-        cursor.close()
-        return false
-    }
-
-    fun getUserDataByUser(product: String): Cursor? {
-        val db = this.writableDatabase
-        //cursor is selecting the row. what ever is selected is loaded in the cursor
-        return db.rawQuery("Select * from ProductDatabase where product=? ", arrayOf(product))
-    }
-
-    fun getUserDataById(uid: Int): Cursor? {
-        val db = this.writableDatabase
-        //cursor is selecting the row. what ever is selected is loaded in the cursor
-        return db.rawQuery("Select * from ProductDatabase where uid=? ", arrayOf(uid.toString()))
-    }
-
-    fun getUserData(): Cursor? {
-        val db = this.writableDatabase
-        //cursor is selecting the row. what ever is selected is loaded in the cursor
-        return db.rawQuery("Select * from ProductDatabase", null)
-    }
-
-    fun deleteAllUserData(): Boolean {
-        val db = this.writableDatabase
-        //cursor is selecting the row. what ever is selected is loaded in the cursor
-        val cursor = db.rawQuery("Select * from ProductDatabase", null)
-        //check if tata is in database have some data
-        if (cursor.count > 0) {
-            val result = db.delete("ProductDatabase", null, null).toLong()
-            return result != -1L
-        }
-        cursor.close()
-        return false
+        // return count
+        return size
     }
 }

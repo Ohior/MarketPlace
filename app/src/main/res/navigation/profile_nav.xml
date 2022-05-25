@@ -19,6 +19,9 @@
         <action
             android:id="@+id/profileFragment_to_chatListFragment2"
             app:destination="@id/chatListFragment2" />
+        <action
+            android:id="@+id/profileFragment_to_customerProfileEditFragment"
+            app:destination="@id/customerProfileEditFragment" />
     </fragment>
     <fragment
         android:id="@+id/profileEditFragment"
@@ -49,6 +52,9 @@
         <action
             android:id="@+id/chatListFragment2_to_chatFragment2"
             app:destination="@id/chatFragment2" />
+        <action
+            android:id="@+id/chatListFragment2_to_customerProfileEditFragment"
+            app:destination="@id/customerProfileEditFragment" />
     </fragment>
     <fragment
         android:id="@+id/chatFragment2"
@@ -57,6 +63,15 @@
         tools:layout="@layout/fragment_chat" >
         <action
             android:id="@+id/chatFragment2_to_chatListFragment2"
+            app:destination="@id/chatListFragment2" />
+    </fragment>
+    <fragment
+        android:id="@+id/customerProfileEditFragment"
+        android:name="com.example.marketplace.profile.CustomerProfileEditFragment"
+        android:label="fragment_customer_profile_edit"
+        tools:layout="@layout/fragment_customer_profile_edit" >
+        <action
+            android:id="@+id/customerProfileEditFragment_to_chatListFragment2"
             app:destination="@id/chatListFragment2" />
     </fragment>
 </navigation>

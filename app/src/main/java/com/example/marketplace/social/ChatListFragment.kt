@@ -11,8 +11,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.marketplace.R
 import com.example.marketplace.adapter.ChatListAdapter
 import com.example.marketplace.data.ChatListDataClass
-import com.example.marketplace.data.CustomerDataClass
-import com.example.marketplace.data.MessageDataClass
 import com.example.marketplace.tool.Constant
 import com.example.marketplace.tool.FirebaseManager
 import com.example.marketplace.tool.Tool
@@ -62,8 +60,8 @@ class ChatListFragment : Fragment() {
     }
 
     private fun displayChatContacts() {
-        val path = "vendor/vendor_$user_name"+"_$user_password/chat"
-        Tool.loadingProgressBar(requireContext(), "getting shops..."){probar->
+        val path = "$user_type/${user_type}_$user_name"+"_$user_password/chat"
+        Tool.loadingProgressBar(requireContext(), "getting chats..."){probar->
             firebase_manager.getFirebaseDatas(path){snapshot ->
                 chat_list_adapter.clearAdapter()
                 for ((count, shot) in snapshot.withIndex()){
@@ -90,8 +88,8 @@ class ChatListFragment : Fragment() {
                 override fun onItemClick(position: Int, view: View) {
                     val name = view.findViewById<TextView>(R.id.id_tv_profile_name)
                     val password = view.findViewById<TextView>(R.id.id_tv_hidden)
-                    Constant.setString(requireContext(), Constant.CLICK_USER, name.text.toString().trim())
-                    Constant.setString(requireContext(), Constant.CLICK_PASSWORD, password.text.toString().trim())
+                    Constant.setString(requireContext(), Constant.CLICK_USER, name.text.toString())
+                    Constant.setString(requireContext(), Constant.CLICK_PASSWORD, password.text.toString())
                     Navigation.findNavController(screen_view).navigate(R.id.chatListFragment2_to_chatFragment2)
                 }
 

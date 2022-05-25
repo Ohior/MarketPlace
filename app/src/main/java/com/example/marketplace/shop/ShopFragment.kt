@@ -8,7 +8,6 @@ import android.widget.*
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.marketplace.MainActivity
 import com.example.marketplace.R
@@ -17,6 +16,8 @@ import com.example.marketplace.market.MarketActivity
 import com.example.marketplace.tool.Constant
 import com.example.marketplace.tool.FirebaseManager
 import com.example.marketplace.data.ProductDataClass
+import com.example.marketplace.data.UserDatabase
+import com.example.marketplace.data.VendorDataClass
 import com.example.marketplace.tool.Tool
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.database.*
@@ -47,9 +48,8 @@ class ShopFragment : Fragment() {
     //adapter
     private lateinit var product_recycler_adapter: ProductRecyclerAdapter
 
-    //array list
-    private lateinit var product_array_list: ArrayList<ProductDataClass>
-
+    //clicked database
+    private lateinit var vendor_database: UserDatabase
 
 //    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
 //        super.onCreateOptionsMenu(menu, inflater)
@@ -63,12 +63,13 @@ class ShopFragment : Fragment() {
                 when (user_type) {
                     "null" -> {
                         startActivity(Intent(requireContext(), MainActivity::class.java))
-                        Toast.makeText(requireContext(), "$user_name Chat null", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "You must be Login or be a customer to chat", Toast.LENGTH_SHORT).show()
                         requireActivity().finish()
                     }
                     "customer" -> {
                         Navigation.findNavController(screen_view).navigate(R.id.shopFragment_to_chatFragment)
                     }
+                    else->Tool.showShortToast(requireContext(), "You must be Login or be a customer to chat")
                 }
 //                Toast.makeText(requireContext(), "$user_name Chat", Toast.LENGTH_SHORT).show()
                 true
@@ -76,7 +77,6 @@ class ShopFragment : Fragment() {
             R.id.id_menu_market ->{
                 requireActivity().finish()
                 startActivity(Intent(requireContext(), MarketActivity::class.java))
-                Toast.makeText(requireContext(), "Market", Toast.LENGTH_SHORT).show()
                 true
             }
             R.id.id_menu_location ->{
@@ -98,12 +98,11 @@ class ShopFragment : Fragment() {
         user_type = Constant.getString(requireContext(), Constant.USER_TYPE).toString()
         user_password = Constant.getString(requireContext(), Constant.PASSWORD).toString()
 
-
-        product_array_list = ArrayList()
-
         //set firebase for functionality
         db_reference = FirebaseDatabase.getInstance().getReference()
         firebase_manager = FirebaseManager(requireContext())
+        vendor_database = UserDatabase(requireContext(), Constant.VENDOR_DB_NAME)
+        vendor_database.deleteDatabaseTable()
         setHasOptionsMenu(true)
     }
 
@@ -124,38 +123,49 @@ class ShopFragment : Fragment() {
         id_tv_profile_name = screen_view.findViewById(R.id.id_tv_profile_name)
 
         //create layout for product recycler view
-        id_rv_shop_items.layoutManager = GridLayoutManager(context, Constant.COL_COUNT)
-
         // set the ProductRecyclerAdapter
-        product_recycler_adapter = ProductRecyclerAdapter(requireContext(),product_array_list)
-        id_rv_shop_items.adapter = product_recycler_adapter
+        product_recycler_adapter = ProductRecyclerAdapter(requireContext(), id_rv_shop_items, Constant.COL_COUNT)
+//        id_rv_shop_items.adapter = product_recycler_adapter
 
         val password = Constant.getString(requireContext(), Constant.CLICK_PASSWORD)
         val username = Constant.getString(requireContext(), Constant.CLICK_USER)
         Tool.debugMessage("password is $password and user is $username")
         firebase_manager.getVendorData(
-            Constant.VENDOR+"/vendor_"+username+"_"+password+"/$username"){
-            Picasso.get().load(it.imguri).into(id_image_profile)
+            Constant.VENDOR+"/vendor_"+username+"_"+password+"/user"){
+            try {
+                Picasso.get().load(it.imguri).into(id_image_profile)
+            }catch(e:IllegalArgumentException){}
             id_tv_profile_name.text = it.username
             id_tv_profile_shop_name.text = it.storename
             id_tv_profile_address.text = it.address
+            if (it.address.isEmpty()){
+                id_tv_profile_address.text = "No address yet"
+            }
             Tool.debugMessage("lat ${it.latitude} long ${it.longitude}")
             Tool.debugMessage(it.toString())
-            Constant.setString(requireContext(), Constant.LATITUDE, it.latitude)
-            Constant.setString(requireContext(), Constant.LONGITUDE, it.longitude)
+            vendor_database.insertIntoDatabase(VendorDataClass(
+                imguri = it.imguri,
+                username = it.username,
+                password = it.password,
+                phonenumber = it.phonenumber,
+                storename = it.storename,
+                address = it.address,
+                latitude = it.latitude,
+                longitude = it.longitude
+            ))
         }
 
         // LOAD
         firebase_manager.getProductData(
             Constant.VENDOR+"/vendor_"+username+"_"+password+"/"+Constant.PRODUCT){snapshot ->
-            product_array_list.clear()
+            product_recycler_adapter.clearAdapter()
             for ((count, shot) in snapshot.withIndex()){
                 val product = ProductDataClass(
                     shot.child("imguri").value.toString(),
                     shot.child("product").value.toString(),
                     shot.child("price").value.toString(),
                     shot.child("detail").value.toString())
-                product_array_list.add(product)
+                product_recycler_adapter.addToAdapter(product)
                 product_recycler_adapter.notifyItemChanged(count)
             }
         }

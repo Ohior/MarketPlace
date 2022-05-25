@@ -11,15 +11,13 @@
         android:id="@+id/id_menu_location"
         android:title="@string/location"
         app:showAsAction="ifRoom"
+        android:visible="false"
         android:icon="@drawable/locateicon"/>
     <item
         android:id="@+id/id_menu_chat"
         android:title="@string/Chat"
         android:icon="@drawable/chaticon"
         app:showAsAction="ifRoom"/>
-    <item
-        android:id="@+id/id_menu_profile"
-        android:title="@string/profile"/>
     <item
         android:id="@+id/id_menu_setting"
         android:title="@string/settings"

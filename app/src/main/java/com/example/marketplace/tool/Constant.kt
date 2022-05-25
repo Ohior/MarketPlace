@@ -18,6 +18,7 @@ import com.squareup.picasso.Picasso
 import java.io.ByteArrayOutputStream
 
 object Constant {
+    const val VENDOR_DB_NAME = "VendorDatabase"
     const val LOACTION_SERVICE_ID = 175
     const val ACTION_START_LOCATION_SERVICE = "startlocationservice"
     const val ACTION_STOP_LOCATION_SERVICE = "stoplocationservice"
@@ -25,7 +26,7 @@ object Constant {
     const val SHOP_Product_DB_NAME = "shopproductdatabase"
     const val LATITUDE = "latitude"
     const val LONGITUDE = "longitude"
-    val COL_COUNT = 2
+    const val COL_COUNT = 1
     const val USER_TYPE = "usertype"
     const val IMAGE_URI = "imageuri"
     const val PRODUCT = "product"
@@ -36,7 +37,7 @@ object Constant {
     const val USERNAME = "username"
     const val REQUEST_IMAGE_CAMERA = 142
     const val REQUEST_IMAGE_GALLERY = 132
-    const val EMAIL_HACK = "@sabogindaora.com"
+    private const val EMAIL_HACK = "@sabogindaora.com"
     const val CUSTOMER = "customer"
     const val VENDOR = "vendor"
     const val CLICK_USER = "clickuser"
@@ -56,6 +57,13 @@ object Constant {
 
     fun getEmailHack(name: String, email: String = EMAIL_HACK): String {
         return name+email
+    }
+
+    fun getVendorEmailHack(name: String, email: String = EMAIL_HACK): String {
+        return VENDOR+"_"+name+email
+    }
+    fun getCustomerEmailHack(name: String, email: String = EMAIL_HACK): String {
+        return CUSTOMER+"_"+name+email
     }
 
     fun getImageFromFirebase(fbimgdir:String, imgid: ImageView){
@@ -142,12 +150,8 @@ object Constant {
                 && vclass.address.isEmpty())
     }
 
-    fun showProgressBar(context: Context, message: String="Loading.... Please wait", function:(ProgressDialog)->Unit){
-        val progressbar = ProgressDialog(context)
-        progressbar.setTitle(message)
-        progressbar.show()
-
-        function(progressbar)
+    //BECAUSE OF THE WAY YOU HACKED USER TO EMAIL AND IDENTIFYING VENDOR FROM CUSTOMER
+    fun decriptDataHack(data: String, delimiters: String = "_"): List<String> {
+        return data.split(delimiters)
     }
-
 }

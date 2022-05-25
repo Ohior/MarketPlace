@@ -6,10 +6,15 @@
         android:title="@string/profile"
         android:visible="false"/>
     <item
+        android:id="@+id/id_menu_create_customer"
+        android:icon="@drawable/customer_icon"
+        android:title="@string/create_customer"/>
+    <item
+        android:id="@+id/id_menu_create_vendor"
+        android:icon="@drawable/vendor_icon"
+        android:title="@string/create_vendor"/>
+    <item
         android:id="@+id/id_menu_setting"
         android:title="@string/settings"
         android:icon="@drawable/setting_icon"/>
-    <item
-        android:id="@+id/id_menu_logout"
-        android:title="@string/logout"/>
 </menu>

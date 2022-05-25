@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Developer/AndroidStudio/MarketPlace/app/src/main/res/layout-v23/fragment_login.xml" value="0.15489130434782608" />
         <entry key="..\:/Developer/AndroidStudio/MarketPlace/app/src/main/res/layout/activity_main.xml" value="0.12228260869565218" />
         <entry key="..\:/Developer/AndroidStudio/MarketPlace/app/src/main/res/layout/activity_market2.xml" value="0.1" />
         <entry key="..\:/Developer/AndroidStudio/MarketPlace/app/src/main/res/layout/activity_profile.xml" value="0.1621376811594203" />
@@ -14,6 +15,7 @@
         <entry key="..\:/Developer/AndroidStudio/MarketPlace/app/src/main/res/layout/fragment_chat_list.xml" value="0.1" />
         <entry key="..\:/Developer/AndroidStudio/MarketPlace/app/src/main/res/layout/fragment_create_customer.xml" value="0.17028985507246377" />
         <entry key="..\:/Developer/AndroidStudio/MarketPlace/app/src/main/res/layout/fragment_create_vendor.xml" value="0.15172101449275363" />
+        <entry key="..\:/Developer/AndroidStudio/MarketPlace/app/src/main/res/layout/fragment_customer_profile_edit.xml" value="0.1802536231884058" />
         <entry key="..\:/Developer/AndroidStudio/MarketPlace/app/src/main/res/layout/fragment_locate.xml" value="0.22" />
         <entry key="..\:/Developer/AndroidStudio/MarketPlace/app/src/main/res/layout/fragment_login.xml" value="0.22" />
         <entry key="..\:/Developer/AndroidStudio/MarketPlace/app/src/main/res/layout/fragment_market.xml" value="0.1" />
@@ -24,11 +26,16 @@
         <entry key="..\:/Developer/AndroidStudio/MarketPlace/app/src/main/res/layout/message_items.xml" value="0.25" />
         <entry key="..\:/Developer/AndroidStudio/MarketPlace/app/src/main/res/layout/product_items.xml" value="0.20729166666666668" />
         <entry key="..\:/Developer/AndroidStudio/MarketPlace/app/src/main/res/layout/shop_items.xml" value="0.1793478260869565" />
+        <entry key="..\:/Developer/AndroidStudio/MarketPlace/app/src/main/res/layout/tool_layout.xml" value="0.1598731884057971" />
         <entry key="..\:/Developer/AndroidStudio/MarketPlace/app/src/main/res/layout/vendor_item2.xml" value="0.1693840579710145" />
         <entry key="..\:/Developer/AndroidStudio/MarketPlace/app/src/main/res/layout/vendor_items.xml" value="0.20729166666666668" />
         <entry key="..\:/Developer/AndroidStudio/MarketPlace/app/src/main/res/layout/web_map_layout.xml" value="0.1" />
         <entry key="..\:/Developer/AndroidStudio/MarketPlace/app/src/main/res/menu/market_menu.xml" value="0.203125" />
+        <entry key="..\:/Developer/AndroidStudio/MarketPlace/app/src/main/res/menu/settings_popup.xml" value="0.1" />
         <entry key="..\:/Developer/AndroidStudio/MarketPlace/app/src/main/res/menu/shop_menu.xml" value="0.203125" />
+        <entry key="..\:/Developer/AndroidStudio/MarketPlace/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.11614583333333334" />
+        <entry key="..\:/Developer/AndroidStudio/MarketPlace/app/src/main/res/mipmap-anydpi-v26/ic_launcher_custom.xml" value="0.11614583333333334" />
+        <entry key="..\:/Developer/AndroidStudio/MarketPlace/app/src/main/res/mipmap-anydpi-v26/ic_launcher_custom_round.xml" value="0.11614583333333334" />
         <entry key="..\:/Developer/AndroidStudio/MarketPlace/app/src/main/res/xml/preference.xml" value="0.25" />
       </map>
     </option>

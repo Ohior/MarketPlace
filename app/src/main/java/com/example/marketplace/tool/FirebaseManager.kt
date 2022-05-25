@@ -2,16 +2,15 @@ package com.example.marketplace.tool
 
 import android.app.Activity
 import android.content.Context
-import android.net.Uri
 import android.util.Log
 import com.example.marketplace.data.VendorDataClass
 import com.google.android.gms.tasks.Task
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import com.google.firebase.storage.UploadTask
 
 class FirebaseManager{
+    private var bool_holder = false
     private var database_refrence: DatabaseReference
     private var firebase_database: FirebaseDatabase
     private var storage_refrence: StorageReference
@@ -54,12 +53,12 @@ class FirebaseManager{
         val fblistener = object: ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val vendor = VendorDataClass(
-                    snapshot.child("imguri").value.toString(),
-                    snapshot.child("username").value.toString(),
-                    snapshot.child("password").value.toString(),
-                    snapshot.child("phonenumber").value.toString(),
-                    snapshot.child("storename").value.toString(),
-                    snapshot.child("address").value.toString(),
+                    imguri = snapshot.child("imguri").value.toString(),
+                    username = snapshot.child("username").value.toString(),
+                    password = snapshot.child("password").value.toString(),
+                    phonenumber = snapshot.child("phonenumber").value.toString(),
+                    storename = snapshot.child("storename").value.toString(),
+                    address = snapshot.child("address").value.toString(),
                 )
                 function(vendor, snapshot.exists())
             }
@@ -72,19 +71,18 @@ class FirebaseManager{
     }
 
     fun getVendorData(path: String, function:(VendorDataClass)->Unit){
-//        var vendor: VendorDataClass? = null
         val dbref = firebase_database.getReference(path)
         val fblistener = object: ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val vendor = VendorDataClass(
-                    snapshot.child("imguri").value.toString(),
-                    snapshot.child("username").value.toString(),
-                    snapshot.child("password").value.toString(),
-                    snapshot.child("phonenumber").value.toString(),
-                    snapshot.child("storename").value.toString(),
-                    snapshot.child("address").value.toString(),
-                    snapshot.child("latitude").value.toString(),
-                    snapshot.child("longitude").value.toString(),
+                    imguri = snapshot.child("imguri").value.toString(),
+                    username = snapshot.child("username").value.toString(),
+                    password = snapshot.child("password").value.toString(),
+                    phonenumber = snapshot.child("phonenumber").value.toString(),
+                    storename = snapshot.child("storename").value.toString(),
+                    address = snapshot.child("address").value.toString(),
+                    latitude = snapshot.child("latitude").value.toString(),
+                    longitude = snapshot.child("longitude").value.toString(),
                 )
                 function(vendor)
             }
@@ -96,6 +94,41 @@ class FirebaseManager{
         dbref.addValueEventListener(fblistener)
     }
 
+    // DELETE FROM FIREBASE REALTIME DATABASE
+    fun deleteFromDatabase(
+        path: String,
+        imgname: String?,
+        function: (dbref:Task<Void>) -> Unit
+    ){
+        val patht = "$path/$imgname"
+        Tool.debugMessage(patht, "CHECKING")
+        val dbrefrence = database_refrence.child(patht)
+
+        function(dbrefrence.removeValue())
+    }
+
+    // DELETE FROM FIREBASE STORAGE
+    fun deleteFromStorageDatabase(
+        pathuri: String,
+        function:(Task<Void>)-> Unit
+    ){
+        val strefrence = firebase_storage.getReferenceFromUrl(pathuri)
+        function(strefrence.delete())
+    }
+
+    // DELETE FROM FIREBASE STORAGE
+    fun deleteFromStorageDatabase(pathuri: String): Boolean {
+        val strefrence = firebase_storage.getReferenceFromUrl(pathuri)
+        strefrence.delete()
+            .addOnSuccessListener {
+                bool_holder = true
+            }
+            .addOnFailureListener {
+                bool_holder = false
+            }
+        val bholder = bool_holder
+        return bholder
+    }
 
     fun getProductData(path: String, function:(Iterable<DataSnapshot>)->Unit){
         val dbref = firebase_database.getReference(path)
@@ -149,39 +182,9 @@ class FirebaseManager{
     }
 
     fun addToFirebaseDatabase(
-        storeagepath: String,
         realtimedatabasepath: String,
-        data: Any,
-        uri: Uri? = null,
-        function: (UploadTask) -> Unit,
-    ): Task<DataSnapshot> {
-        var path: Uri? = null
-        val filepath = storage_refrence.child(storeagepath)
-        val listen = filepath.putFile(uri!!)
-        function(listen)
-        filepath.downloadUrl.addOnSuccessListener {
-            path = it
-        }
-        database_refrence.push().child(realtimedatabasepath).setValue(data)
-        return database_refrence.child(realtimedatabasepath).get()
-    }
-
-    fun getDecryptUsers(path: String, delimiters:String="_"): ArrayList<List<String>>? {
-        val dbref = firebase_database.getReference(path)
-        val fblistener = object: ValueEventListener {
-            override fun onDataChange(snapshots: DataSnapshot) {
-                for (snapshot in snapshots.children){
-                    Tool.debugMessage(snapshot.key.toString(), "SNAPSHOT")
-                    val split = snapshot.key.toString().split(delimiters)
-                    list_of_users?.add(split)
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                Constant.showShortToast(context, "There was an error")
-            }
-        }
-        dbref.addValueEventListener(fblistener)
-        return list_of_users
+        data: Any): Task<Void> {
+        val complete = database_refrence.child(realtimedatabasepath).setValue(data)
+        return complete
     }
 }

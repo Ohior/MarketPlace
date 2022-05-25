@@ -1,10 +1,15 @@
 package com.example.marketplace.tool
 
+import android.app.Activity
 import android.app.AlertDialog
+import android.app.Dialog
 import android.app.ProgressDialog
 import android.content.Context
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
 import androidx.fragment.app.Fragment
 import android.view.animation.Animation
 import android.view.animation.RotateAnimation
@@ -12,6 +17,7 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.FragmentManager
 import com.example.marketplace.R
+import com.squareup.picasso.Picasso
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -63,6 +69,12 @@ object Tool {
         function(progressbar)
         progressbar.show()
     }
+    fun loadingProgressBarMessage(context: Context, message: String="Loading.... Please wait", function:(ProgressDialog)->Unit){
+        val progressbar = ProgressDialog(context)
+        progressbar.setMessage(message)
+        function(progressbar)
+        progressbar.show()
+    }
 
     fun popUpMessage(context:Context, message:String,function: (AlertDialog.Builder) -> Unit){
         val popup = AlertDialog.Builder(context)
@@ -77,16 +89,20 @@ object Tool {
         popup.show()
     }
 
-    fun popUpDisplay(context:Context, title: String, message:String,function: (AlertDialog.Builder) -> Unit){
+    fun popUpDisplay(context:Context,function: (AlertDialog.Builder) -> Unit){
         val popup = AlertDialog.Builder(context)
-        popup.setTitle(title)
-        popup.setMessage(message)
         function(popup)
         popup.show()
     }
-    fun popUpDialog(context:Context,function: (AlertDialog.Builder) -> Unit){
-        val popup = AlertDialog.Builder(context)
-        function(popup)
+
+    fun popUpWindow(activity:Activity, title: String, layout: Int, lambda:((View)-> Unit)?= null){
+        val view = LayoutInflater.from(activity)
+            .inflate(layout, null)
+        AlertDialog.Builder(activity).apply {
+            this.setTitle(title)
+            this.setView(view)
+            lambda!!(view)
+        }.show()
     }
 
     fun loadingIconProgressBar(
@@ -130,5 +146,36 @@ object Tool {
                 longDiff)
         return (Math.toDegrees(Math.atan2(y, x)) + 360) % 360
     }
+
+    fun loadImageToImageView(uri: String, imageview: ImageView): Boolean {
+        return try {
+            Picasso.get().load(uri).into(imageview)
+            true
+        }catch(e:IllegalArgumentException){
+            false
+        }
+    }
 }
 
+class LimitedArray<T>(private val size:Int){
+    val LIMITED_ARRAY = ArrayList<T>()
+
+    fun addTo(item: T) {
+        if(LIMITED_ARRAY.size < size){
+            LIMITED_ARRAY.add(item)
+        }else throw IndexOutOfBoundsException()
+    }
+
+    fun getSize(): Int{
+        return LIMITED_ARRAY.size
+    }
+
+    fun removeFrom(index: Int = 0) {
+        LIMITED_ARRAY.removeAt(index)
+    }
+
+    fun getFrom(index: Int = 0): T {
+        return LIMITED_ARRAY[index]
+    }
+
+}

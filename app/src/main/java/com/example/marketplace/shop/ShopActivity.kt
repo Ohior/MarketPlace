@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
 import com.example.marketplace.MainActivity
 import com.example.marketplace.R
 import com.example.marketplace.setting.SettingActivity

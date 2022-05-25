@@ -1,15 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android">
-    <CheckBoxPreference
-        android:key="@string/app_theme"
+    <SwitchPreferenceCompat
+        android:key="key_apptheme_setting"
         android:title="@string/set_theme_dark"
         android:summary="@string/for_your_eyes"
-        android:defaultValue="true"/>
-    <ListPreference
-        android:key="@string/app_layout"
-        android:title="@string/set_app_layout"
-        android:entries="@array/layout_style_entries"
-        android:entryValues="@array/layout_style_values"
-        android:defaultValue="@string/layout_style_default_value"/>
+        android:defaultValue="false"/>
 </PreferenceScreen>

@@ -1,19 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:id="@+id/id_login_ll"
+    android:paddingVertical="30dp"
     tools:context=".LoginFragment">
+
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="100dp"
         android:id="@+id/id_iv_image"
-        android:src="@drawable/applogo"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:layout_gravity="center_horizontal"
+        android:layout_marginVertical="20dp"
         android:contentDescription="@string/profile_image"
-        android:layout_marginVertical="20dp"/>
+        android:src="@drawable/applogo" />
         <EditText
             android:layout_width="match_parent"
             android:layout_height="50dp"
@@ -26,17 +29,32 @@
             android:paddingHorizontal="10dp"
             android:layout_marginHorizontal="10dp"
             android:layout_marginBottom="10dp"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
         <EditText
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.7"
             android:id="@+id/id_et_login_password"
             android:importantForAutofill="no"
             android:inputType="textPassword"
             android:maxLength="10"
             android:background="@drawable/bg_border"
             android:paddingHorizontal="10dp"
-            android:layout_marginHorizontal="10dp"
+            android:layout_marginHorizontal="5dp"
             android:hint="@string/password"/>
+
+        <Button
+            android:id="@+id/id_iv_show_password"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Show"
+            android:textColor="@color/black"
+            android:contentDescription="@string/password" />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -45,13 +63,13 @@
         android:orientation="horizontal">
 
         <Button
+            style="@style/myButton"
             android:id="@+id/id_btn_login"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:layout_marginHorizontal="10dp"
-            android:text="@string/vendor"
-            style="@style/myButton" />
+            android:layout_weight="1"
+            android:text="@string/vendor" />
 
         <Button
             android:layout_width="0dp"
@@ -62,14 +80,6 @@
             android:layout_marginHorizontal="10dp"
             style="@style/myButton"/>
     </LinearLayout>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="10dp"
-            android:textSize="20sp"
-            android:gravity="center_horizontal"
-            android:text="@string/text_for_create_store"/>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -79,48 +89,26 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/id_tv_create_store"
-            android:gravity="center_horizontal"
-            android:textColor="@color/red"
             android:text="@string/create_store"
-            android:textSize="15sp"
-            android:layout_marginEnd="30dp"
-            android:textStyle="italic"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:textSize="20sp"
-            android:text="@string/or_click"/>
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginVertical="10dp"
-        android:gravity="center_horizontal"
-        android:orientation="horizontal">
+            style="@style/textStyle"
+            android:layout_marginHorizontal="10dp"
+            android:paddingHorizontal="10dp"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/id_tv_create_customer"
-            android:textColor="@color/red"
             android:text="@string/create_customer"
-            android:paddingHorizontal="10dp"
-            android:textSize="15sp"
-            android:textStyle="italic"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:textSize="20sp"
-            android:text="@string/customer_text"/>
+            style="@style/textStyle"
+            android:layout_marginHorizontal="10dp"
+            android:paddingHorizontal="10dp"/>
     </LinearLayout>
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/id_btn_visitor"
         android:text="@string/visitor"
-        android:padding="25dp"
-        android:visibility="gone"
+        android:textSize="30sp"
+        android:textColor="@color/black"
         android:layout_marginVertical="25dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginHorizontal="10dp"/>

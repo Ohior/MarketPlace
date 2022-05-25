@@ -13,11 +13,16 @@ import com.squareup.picasso.Picasso
 
 class ProductRecyclerAdapter(
     private val context: Context,
-    private val product_list: ArrayList<ProductDataClass>):
-    RecyclerView.Adapter<ProductRecyclerAdapter.ProductViewHolder>() {
-
+    private val recycler_view: RecyclerView,
+    column_count:Int
+): RecyclerView.Adapter<ProductRecyclerAdapter.ProductViewHolder>() {
+    private val array_list: ArrayList<ProductDataClass> = ArrayList()
     private lateinit var click_listener: OnClickListener
 
+    init {
+        this.recycler_view.layoutManager = CustomGridLayoutManager(context, column_count)
+        this.recycler_view.adapter = this
+    }
 
     interface OnClickListener{
         fun onItemClick(position: Int, view: View)
@@ -36,17 +41,41 @@ class ProductRecyclerAdapter(
 
     override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
         //bind data to viewholder
-        val productitem = product_list[position]
+        val productitem = array_list[position]
 
-        Picasso.get().load(product_list[position].imguri).into(holder.imguri)
+        Picasso.get().load(array_list[position].imguri).into(holder.imguri)
         holder.itemprice.text = productitem.price
         holder.itemdetali.text = productitem.detail
         holder.itemproduct.text = productitem.product
     }
 
     override fun getItemCount(): Int {
-        return product_list.size
+        return array_list.size
     }
+
+    fun clearAdapter(){
+        //remove all item from your recyclerview
+        array_list.clear()
+    }
+
+    fun removeItem(index: Int){
+        array_list.removeAt(index)
+    }
+
+    fun addToAdapter(element: ProductDataClass){
+        // add item to your recyclerview
+        array_list.add(element)
+    }
+
+    fun getItem(index: Int): ProductDataClass {
+        return array_list[index]
+    }
+
+    fun addToAdapter(index:Int, element: ProductDataClass){
+        // add item to an index spot of your recyclerview
+        array_list.add(index, element)
+    }
+
     class ProductViewHolder(item_view: View, listener: OnClickListener): RecyclerView.ViewHolder(item_view){
         val imguri: ImageView = item_view.findViewById(R.id.id_iv_product_img)
         val itemprice: TextView = item_view.findViewById(R.id.id_store_item_price)

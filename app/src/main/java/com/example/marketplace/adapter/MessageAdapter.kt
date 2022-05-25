@@ -41,19 +41,25 @@ class MessageAdapter(
     override fun onBindViewHolder(holder: MessageViewHolder, position: Int) {
         //bind data to viewholder
         val messageitem = message_list[position]
-        holder.name.text = messageitem.name
+        var mess = "from: ${messageitem.name}"
+        //holder.name.text = messageitem.name
+        holder.name.text = mess
         holder.message.text = messageitem.message
         if(user_name.lowercase() == messageitem.message.lowercase()){
+            mess = "sender: ${messageitem.name}"
+            holder.name.text = mess
             holder.name.textSize = 20f
             holder.message.textSize = 15f
             holder.name.setTypeface(holder.name.typeface, Typeface.BOLD_ITALIC)
-            holder.llayout.setBackgroundColor(Color.parseColor("#cae00d"))
+            holder.llayout.setBackgroundColor(Color.parseColor("#ffffff"))
         }
         if(user_name.lowercase() == messageitem.name.lowercase()){
+            mess = "sender: ${messageitem.name}"
+            holder.name.text = mess
             holder.message.textSize = 20f
-            holder.message.setTypeface(holder.name.typeface, Typeface.BOLD_ITALIC)
             holder.name.textSize = 15f
-            holder.llayout.setBackgroundColor(Color.parseColor("#cae00d"))
+            holder.message.setTypeface(holder.name.typeface, Typeface.BOLD_ITALIC)
+            holder.llayout.setBackgroundColor(Color.parseColor("#ffffff"))
         }
     }
 

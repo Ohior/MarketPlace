@@ -24,11 +24,13 @@ import androidx.navigation.Navigation
 import com.example.marketplace.R
 import com.example.marketplace.tool.Constant
 import com.example.marketplace.data.ProductDataClass
+import com.example.marketplace.tool.Tool
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import java.io.File
+import java.util.*
 
 
 class ProfileProductFragment : Fragment() {
@@ -40,8 +42,9 @@ class ProfileProductFragment : Fragment() {
     private lateinit var id_product_item_detail: EditText
     private lateinit var id_btn_cancel: Button
     private lateinit var id_btn_save: Button
-    private lateinit var product_image: Bitmap
     private lateinit var product_image_uri: Uri
+    private lateinit var product_online_image_uri: Uri
+    private lateinit var random_product_id: String
 
     private lateinit var db_reference: DatabaseReference
     private lateinit var storage_refrence: StorageReference
@@ -53,6 +56,7 @@ class ProfileProductFragment : Fragment() {
     private lateinit var user_password: String
 
 
+    // Override Function
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == Constant.REQUEST_IMAGE_GALLERY && resultCode == Activity.RESULT_OK &&
@@ -66,7 +70,7 @@ class ProfileProductFragment : Fragment() {
             data != null
         ) {
             val photo = data.extras?.get("data") as Bitmap
-            product_image_uri = Constant.getImageUri(this.requireContext(), photo)
+            product_image_uri = Constant.getImageUri(requireContext(), photo)
             val finalfile = File(Constant.getRealPathFromUri(requireActivity(), requireContext(), product_image_uri))
             id_iv_product_img.setImageBitmap(photo)
         } else Toast.makeText(requireContext(), "Could not get image", Toast.LENGTH_LONG).show()
@@ -81,7 +85,6 @@ class ProfileProductFragment : Fragment() {
         user_type = Constant.getString(requireContext(), Constant.USER_TYPE).toString()
         user_password = Constant.getString(requireContext(), Constant.PASSWORD).toString()
     }
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -109,24 +112,12 @@ class ProfileProductFragment : Fragment() {
     }
 
 
+    // Personal function
     private fun saveButtonClicked() {
         id_btn_save.setOnClickListener{
-            //get details
-
-            try {
-                val imgfilepath = storage_refrence.child(product_image_uri.lastPathSegment!!)
-//                product_image_uri.lastPathSegment
-                saveProductToDatabase(imgfilepath, screen_view)
-            }catch (uninitialized: UninitializedPropertyAccessException){
-                product_image_uri = Constant.getDrawableUri(resources, R.drawable.applogo)
-                val imgfilepath = storage_refrence.child(product_image_uri.lastPathSegment!!)
-                saveProductToDatabase(imgfilepath, screen_view)
-            }
-
-//            val imgfilepath = storage_refrence.child(product_image_uri.lastPathSegment!!)
-//            saveProductToDatabase(imgfilepath)
-
-//            db_reference  = FirebaseDatabase.getInstance().getReference()
+            random_product_id = UUID.randomUUID().toString()
+            val imgfilepath = storage_refrence.child("productimage/$random_product_id")
+            saveProductToDatabase(imgfilepath, screen_view)
         }
     }
 
@@ -134,30 +125,33 @@ class ProfileProductFragment : Fragment() {
         val pname = id_product_item_pname.text.toString()
         val price = id_product_item_price.text.toString()
         val detail = id_product_item_detail.text.toString()
-        if (Constant.checkProductEmptyFields(ProductDataClass(product_image_uri.toString(), pname, price, detail))){
-            //check if any field is empty
-            imgfilepath.putFile(product_image_uri)
-                .addOnSuccessListener {
-                    imgfilepath.downloadUrl.addOnCompleteListener {
-                        // it contains the online file path
-                        product_image_uri = it.result
-                        Constant.debugMessage(product_image_uri.toString(), tag = "product_image_uri")
-                    }.addOnSuccessListener {
-                        // it contains the online file path
-                        product_image_uri = it
-                        Constant.debugMessage(product_image_uri.toString(), tag = "product_image_uri")
+        Tool.loadingProgressBar(requireContext(), "Creating product please wait...")
+        {probar ->
+            probar.setCancelable(false)
+            if (Constant.checkProductEmptyFields(ProductDataClass(product_image_uri.toString(), pname, price, detail))){
+                //check if any field is empty
+                imgfilepath.putFile(product_image_uri)
+                    .addOnSuccessListener {
+                        imgfilepath.downloadUrl.addOnSuccessListener {
+                            // it contains the online file path
+                            product_online_image_uri = it
+                            addProduct(pname, price, detail)
+                            Navigation.findNavController(screen_view).navigate(R.id.profileProductFragment_to_profileFragment)
+                            probar.dismiss()
+                        }
                     }
-                    addProduct(pname, price, detail)
-                    Navigation.findNavController(screen_view).navigate(R.id.profileProductFragment_to_profileFragment)
-                    Toast.makeText(this.context, "Upload Successful", Toast.LENGTH_LONG).show()
-                }
-                .addOnFailureListener{
-                    Toast.makeText(this.context, "Failed", Toast.LENGTH_SHORT).show()
-                }
-                .addOnProgressListener {
-                }
+                    .addOnFailureListener{
+                        probar.dismiss()
+                        Toast.makeText(this.context, "Failed", Toast.LENGTH_SHORT).show()
+                    }
+                    .addOnProgressListener {
+                    }
 
-        }else Constant.showShortToast(requireContext(), "All fields should be filled :|")
+            }else{
+                Constant.showShortToast(requireContext(), "All fields should be filled :|")
+                probar.dismiss()
+            }
+        }
 
     }
 
@@ -167,8 +161,8 @@ class ProfileProductFragment : Fragment() {
         db_reference.child("vendor")
             .child("vendor_${user_name}_${user_password}")
             .child(Constant.PRODUCT)
-            .child(pname)
-            .setValue(ProductDataClass(product_image_uri.toString(), pname, price, detail))
+            .child(random_product_id)
+            .setValue(ProductDataClass(product_online_image_uri.toString(), pname, price, detail))
         id_product_item_pname.text.clear()
         id_product_item_price.text.clear()
         id_product_item_detail.text.clear()
@@ -192,8 +186,8 @@ class ProfileProductFragment : Fragment() {
             popup.setPositiveButton("gallery") { _: DialogInterface, _: Int ->
                 val intent = Intent(Intent.ACTION_GET_CONTENT)
                 intent.type = "image/*"
-            startActivityForResult(intent, Constant.REQUEST_IMAGE_GALLERY)
-//                startActivityForResult(Intent.createChooser(intent, "Select Picture"), Constant.REQUEST_IMAGE_GALLERY)
+//            startActivityForResult(intent, Constant.REQUEST_IMAGE_GALLERY)
+                startActivityForResult(Intent.createChooser(intent, "Select Picture"), Constant.REQUEST_IMAGE_GALLERY)
 
             }
             popup.setNegativeButton("camera") { dialog: DialogInterface, which: Int ->
@@ -214,4 +208,5 @@ class ProfileProductFragment : Fragment() {
             popup.show()
         }
     }
+
 }

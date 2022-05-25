@@ -11,7 +11,6 @@ import com.example.marketplace.R
 import com.example.marketplace.tool.Constant
 import com.google.firebase.auth.FirebaseAuth
 import com.example.marketplace.BuildConfig
-import com.example.marketplace.setting.SettingActivity
 import android.view.Window
 import java.lang.Exception
 import java.lang.RuntimeException
@@ -22,58 +21,58 @@ class MarketActivity : AppCompatActivity() {
 
     private lateinit var firebase_auth: FirebaseAuth
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.market_menu, menu)
-//        return super.onCreateOptionsMenu(menu)
-        return true
-    }
-
-    override fun onMenuOpened(featureId: Int, menu: Menu): Boolean {
-        if (menu.javaClass.simpleName == "MenuBuilder") {
-            try {
-                val m: Method = menu.javaClass.getDeclaredMethod(
-                    "setOptionalIconsVisible", java.lang.Boolean.TYPE)
-                m.isAccessible = true
-                m.invoke(menu, true)
-            } catch (e: NoSuchMethodException) {
-            } catch (e: Exception) {
-                throw RuntimeException(e)
-            }
-        }
-        return super.onMenuOpened(featureId, menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId){
-            R.id.id_menu_setting ->{
-                startActivity(Intent(this, SettingActivity::class.java))
-                true
-            }
-            R.id.id_menu_logout ->{
-                firebase_auth.signOut()
-                this.finish()
-                startActivity(Intent(this, MainActivity::class.java))
-                true
-            }
-            else -> {
-                super.onOptionsItemSelected(item)
-            }
-        }
-
-    }
+//    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+//        menuInflater.inflate(R.menu.market_menu, menu)
+////        return super.onCreateOptionsMenu(menu)
+//        return true
+//    }
+//
+//    override fun onMenuOpened(featureId: Int, menu: Menu): Boolean {
+//        if (menu.javaClass.simpleName == "MenuBuilder") {
+//            try {
+//                val m: Method = menu.javaClass.getDeclaredMethod(
+//                    "setOptionalIconsVisible", java.lang.Boolean.TYPE)
+//                m.isAccessible = true
+//                m.invoke(menu, true)
+//            } catch (e: NoSuchMethodException) {
+//            } catch (e: Exception) {
+//                throw RuntimeException(e)
+//            }
+//        }
+//        return super.onMenuOpened(featureId, menu)
+//    }
+//
+//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+//        return when (item.itemId){
+//            R.id.id_menu_setting ->{
+//                startActivity(Intent(this, SettingActivity::class.java))
+//                true
+//            }
+//            R.id.id_menu_logout ->{
+//                firebase_auth.signOut()
+//                this.finish()
+//                startActivity(Intent(this, MainActivity::class.java))
+//                true
+//            }
+//            else -> {
+//                super.onOptionsItemSelected(item)
+//            }
+//        }
+//
+//    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_market2)
         firebase_auth = FirebaseAuth.getInstance()
-        checkFirstRun()
+//        checkFirstRun()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        finishActivity(1)
-        finish()
-    }
+//    override fun onDestroy() {
+//        super.onDestroy()
+//        finishActivity(1)
+//        finish()
+//    }
 
     private fun checkFirstRun() {
         val PREFS_NAME = "MyPrefsFile"

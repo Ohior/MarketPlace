@@ -21,56 +21,14 @@
             android:textStyle="italic|bold"
             android:textColor="@color/white"
             android:background="@color/black"/>
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:src="@drawable/ic_north"
-            android:layout_marginTop="3dp"
-            android:scaleY="2"
-            android:scaleX="2"
-            tools:ignore="ContentDescription" />
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <ImageView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.07"
-                android:layout_gravity="center_vertical"
-                android:src="@drawable/ic_west"
-                android:scaleY="2"
-                android:scaleX="2"
-                tools:ignore="ContentDescription" />
 
-            <ImageView
+        <ImageView
             android:id="@+id/id_iv_locator"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:contentDescription="@string/pointer_image"
             android:adjustViewBounds="true"
             android:src="@drawable/direction" />
-            <ImageView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.07"
-                android:layout_gravity="center_vertical"
-                android:src="@drawable/ic_east"
-                android:scaleY="2"
-                android:scaleX="2"
-                tools:ignore="ContentDescription" />
-        </LinearLayout>
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:src="@drawable/ic_south"
-            android:scaleY="2"
-            android:scaleX="2"
-            tools:ignore="ContentDescription" />
-
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

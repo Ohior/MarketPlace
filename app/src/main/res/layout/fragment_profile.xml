@@ -18,11 +18,11 @@
             android:layout_height="100dp"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:adjustViewBounds="true"
-            android:scaleType="fitXY"
             android:layout_marginHorizontal="10dp"
+            android:adjustViewBounds="true"
             android:contentDescription="@string/profile_image"
-            android:src="@drawable/proimg" />
+            android:scaleType="fitXY"
+            android:src="@drawable/noimage" />
 
         <TextView
             android:id="@+id/id_tv_profile_name"
@@ -30,8 +30,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_toEndOf="@id/id_image_profile"
-            android:text="@string/store_name"
-            android:textSize="20sp"/>
+            android:text="@string/username"
+            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/id_tv_profile_shop_name"
@@ -70,7 +70,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/id_fab_add_product"
-        android:src="@drawable/ic_add_box"
+        android:src="@drawable/market_icon"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_margin="30dp"

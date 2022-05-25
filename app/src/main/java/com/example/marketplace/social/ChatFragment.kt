@@ -7,13 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageView
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.marketplace.R
+import com.example.marketplace.adapter.CustomGridLayoutManager
 import com.example.marketplace.adapter.MessageAdapter
 import com.example.marketplace.data.MessageDataClass
 import com.example.marketplace.tool.Constant
-import com.example.marketplace.tool.Tool
 import com.google.firebase.database.*
 
 
@@ -60,7 +59,8 @@ class ChatFragment : Fragment() {
         id_et_chat = screen_view.findViewById(R.id.id_et_chat)
         id_bt_send_chat = screen_view.findViewById(R.id.id_bt_send_chat)
         message_adapter = MessageAdapter(requireContext(), array_list, user_name)
-        id_rv_chat_message.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+//        id_rv_chat_message.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        id_rv_chat_message.layoutManager = CustomGridLayoutManager(requireContext())
         id_rv_chat_message.adapter = message_adapter
 
         reciever_room = "chat_$click_user"
@@ -115,7 +115,7 @@ class ChatFragment : Fragment() {
         var ut = "vendor"
         id_bt_send_chat.setOnClickListener{
             if(id_et_chat.text.trim().isNotEmpty()){
-                if(user_type == "vendor"){
+                if(user_type == ut){
                     ut = "customer"
                 }
                 val data = id_et_chat.text.toString().trim()
